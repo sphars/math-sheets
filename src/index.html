@@ -11,46 +11,90 @@
 <body>
     <main>
         <h1>Math Sheets</h1>
-        <form id="inputForm">
+        
+        <p>A math problem generator. Use the form options below to specify what kind of problems to generate.</p>
+
+        <form id="input-form">
             <fieldset>
                 <legend>Operator</legend>
                 <div>
-                    <input required type="radio" id="operatorChoice1" name="operator" value="+" />
-                    <label for="operatorChoice1">+</label>
+                    <input required type="radio" id="operator-add" name="operator" value="+" checked />
+                    <label for="operator-add">Addition (+)</label>
 
-                    <input required type="radio" id="operatorChoice2" name="operator" value="-" />
-                    <label for="operatorChoice2">-</label>
+                    <input required type="radio" id="operator-subtract" name="operator" value="-" />
+                    <label for="operator-subtract">Subtraction (-)</label>
 
-                    <input required type="radio" id="operatorChoice3" name="operator" value="*" />
-                    <label for="operatorChoice3">&times;</label>
+                    <input required type="radio" id="operator-multiply" name="operator" value="*" />
+                    <label for="operator-multiply">Multiplication (&times;)</label>
 
-                    <input required type="radio" id="operatorChoice4" name="operator" value="/" />
-                    <label for="operatorChoice4">&div;</label>
+                    <input required type="radio" id="operator-divide" name="operator" value="/" disabled />
+                    <label for="operator-divide">Division (&div;)</label>
+
+                    <input required type="radio" id="operator-mix" name="operator" value="mix" disabled />
+                    <label for="operator-mix">Mix</label>
+
                 </div>
             </fieldset>
 
             <fieldset>
-                <legend>Range</legend>
+                <legend>Operand Values</legend>
                 <div>
-                    <label for="minInput">Minimum</label>
-                    <input required type="number" id="minInput" name="minInput" min="0" max="999" step="1" value="0" style="width: 64px;">
-                    
-                    <label for="maxInput">Maximum</label>
-                    <input required type="number" id="maxInput" name="maxInput" min="0" max="999" step="1" value="10" style="width: 64px;">                           
+                    <label for="min-input">Minimum</label>
+                    <input required type="number" id="min-input" name="min-input" min="0" max="999" step="1" value="0">
+                </div>
+
+                <div>
+                    <label for="max-input">Maximum</label>
+                    <input required type="number" id="max-input" name="max-input" min="0" max="1000" step="1" value="100">                           
                 </div>
             </fieldset>
-            
-            <div>
-                <label for="numProblems">Number of problems</label>
-                <input required type="number" id="numProblems" name="numProblems" min="1" max="100" step="1" value="10" style="width: 64px;">
-            </div>
-            
-            <button type="submit" id="formSubmit">Generate</button>
-            <input type="checkbox" id="withAnswers" name="withAnswers">
-            <label for="withAnswers">With Answers?</label>
-        </form>
 
-        <ul id="math-problems"></ul>
+            <fieldset>
+                <legend>Options</legend>
+                <div>
+                    <label for="num-problems">Number of problems</label>
+                    <input required type="number" id="num-problems" name="num-problems" min="1" max="1000" step="1" value="35">
+                    <span id="pages"></span>
+                </div>
+
+                <div>
+                    <input type="checkbox" id="desc-order" name="desc-order" checked>
+                    <label for="desc-order">Operands in descending order</label>
+                </div>
+
+                <div>
+                    <input type="checkbox" id="no-negatives" name="no-negatives">
+                    <label for="no-negatives">No negative answers</label>
+                </div>
+
+                <div>
+                    <input type="checkbox" id="ints-only" name="ints-only" disabled>
+                    <label for="ints-only">Integer (whole number) answers only</label>
+                </div>
+
+            </fieldset>
+            
+            
+            <button type="submit" id="form-submit">Generate</button>
+        </form>
+        
+        <div id="actions">
+            <hr>
+            <div>
+                <input type="checkbox" id="show-answers" name="show-answers">
+                <label for="show-answers">Show answers</label>
+            </div>
+
+            <button type="button" id="print-button">Print</button>
+        </div>
+
+        <div id="page">
+            <div id="page-header">
+                <div>NAME: <span class="underline"></span></div>
+                <div>DATE: <span class="underline"></span></div>
+            </div>
+            <div id="math-problems"></div>
+        </div>
     </main>
 </body>
 </html>

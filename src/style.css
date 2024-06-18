@@ -1,0 +1,94 @@
+html {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+input[type="number"] {
+    width: 60px;
+}
+
+#math-problems {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    row-gap: 3rem;
+    margin: 1rem 0;
+    max-height: 512px;
+    overflow-y: auto;
+}
+
+#math-problems > div {
+    display: flex;
+    justify-content: center;
+}
+
+#math-problems > div > div{
+    display: flex;
+    flex-direction: column;
+}
+
+pre {
+    display: inline-block;
+    padding-bottom: 4px;
+    margin: 0;
+
+    font-size: 16px;
+    letter-spacing: 6px;
+    text-align: right;
+}
+
+pre.problem {
+    border-bottom: 2px solid #222222;
+}
+
+pre.hidden {
+    visibility: hidden;
+}
+
+#page #page-header {
+    display: none;
+}
+
+.underline {
+    border-bottom: 1px solid black;
+    display: inline-block;
+    width: 200px;
+}
+
+.outline {
+    outline: 1px solid lightgray;
+}
+
+@media print {
+    h1,
+    p,
+    #input-form,
+    #actions {
+        display: none;
+    }
+
+    #page #page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        font-family: monospace;
+        font-size: 18px;
+    }
+
+    #math-problems {
+        max-height: none;
+        overflow-y: initial;
+        outline: none;
+    }
+
+    .page-break {
+        page-break-after: always;
+    }
+
+    @page {
+        margin-top: 64px;   
+    }
+    
+    @page :first {
+        margin-top: 8px;
+    } 
+}
