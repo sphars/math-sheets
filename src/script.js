@@ -1,6 +1,8 @@
 // --- Script vars
+const itemsPerPage = 35;
 
 // --- Elements
+const page = document.getElementById("page");
 const mathProblemsContainer = document.getElementById("math-problems");
 const inputForm = document.getElementById("input-form");
 const showAnswersCheckbox = document.getElementById("show-answers");
@@ -45,7 +47,8 @@ inputForm.addEventListener('submit', (e) => {
     indsOnly: inputs["ints-only"].checked
   }
 
-  mathProblemsContainer.classList.add("outline");
+  page.classList.remove("hidden");
+  // mathProblemsContainer.classList.add("outline");
   const problems = generateMathProblems(options);
   writeProblems(problems, showAnswersCheckbox.checked);
 });
@@ -60,12 +63,12 @@ printButton.addEventListener("click", () => {
 
 // --- Functions
 function getNumPages(numProblems) {
-  return Math.ceil((numProblems - 35) / 35) + 1;
+  return Math.ceil((numProblems - itemsPerPage) / itemsPerPage) + 1;
 }
 
 function updatePagesNote() {
   const pages = getNumPages(numProblemsInput.value);
-  pagesNote.textContent = `${pages} page${pages === 1 ? "" : "s"} (max. 35 problems per page)`;
+  pagesNote.textContent = `${pages} page${pages === 1 ? "" : "s"} (max. ${itemsPerPage} problems per page)`;
 }
 
 function generateRandInt(min, max) {
@@ -139,9 +142,10 @@ function writeProblems(problems, withAnswer = false) {
     const problemElement = document.createElement("pre");
     problemElement.classList.add("problem");
 
-    const line1 = ` ${problem.left}\n`;
-    const line2 = `${problem.operator === '*' ? String.fromCharCode(215) : problem.operator} ${problem.right}\n`;
-    problemElement.textContent = line1 + line2;
+    const line1 = ` ${problem.left}`;
+    const line2 = `${problem.operator === '*' ? 'x': problem.operator} ${problem.right}`;
+    const line3 = "-".repeat(line2.length);
+    problemElement.textContent = [line1, line2, line3].join("\n");
     
     const answerElement = document.createElement("pre");
     answerElement.classList.add("answer");
@@ -153,10 +157,11 @@ function writeProblems(problems, withAnswer = false) {
 
     gridItem.appendChild(preWrapper);
 
-    if ((index + 1) % 35 === 0) {
-      // add a page break every 35 items
+    if ((index + 1) % itemsPerPage === 0) {
+      // add a page break every 30 items
       gridItem.classList.add("page-break");
     }
+
     gridItems.push(gridItem);
   }
 

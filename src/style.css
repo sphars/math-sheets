@@ -1,18 +1,58 @@
+@font-face {
+    font-family: 'Dotrice';
+    src: url('/assets/Dotrice-Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+:root {
+    --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    --font-mono: 'Dotrice', monospace;
+}
+
 html {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+
+html {
+    font-family: var(--font-sans);
 }
 
 input[type="number"] {
     width: 60px;
 }
 
+#page {
+    max-height: 512px;
+    overflow-y: auto;
+    width: 8.5in;
+    margin: 0 auto;
+    padding: 3rem;
+    outline: 1px solid #888;
+}
+
+#page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    font-family: var(--font-mono);
+    font-size: 20px;
+    letter-spacing: 2px;
+}
+
+
 #math-problems {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    row-gap: 3rem;
+    row-gap: 2.25rem;
     margin: 1rem 0;
-    max-height: 512px;
-    overflow-y: auto;
 }
 
 #math-problems > div {
@@ -30,21 +70,23 @@ pre {
     padding-bottom: 4px;
     margin: 0;
 
-    font-size: 16px;
-    letter-spacing: 6px;
+    font-size: 20px;
+    letter-spacing: .125em;
+    font-variant-numeric: tabular-nums;
     text-align: right;
+    font-family: var(--font-mono);
 }
 
 pre.problem {
-    border-bottom: 2px solid #222222;
+    /* border-bottom: 1px dotted #222222; */
 }
 
-pre.hidden {
+.hidden {
     visibility: hidden;
 }
 
 #page #page-header {
-    display: none;
+    /* display: none; */
 }
 
 .underline {
@@ -53,30 +95,21 @@ pre.hidden {
     width: 200px;
 }
 
-.outline {
-    outline: 1px solid lightgray;
-}
-
 @media print {
     h1,
+    h2,
     p,
     #input-form,
     #actions {
         display: none;
     }
 
-    #page #page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        font-family: monospace;
-        font-size: 18px;
-    }
-
-    #math-problems {
+    #page {
         max-height: none;
         overflow-y: initial;
+        width: unset;
+        margin: 0;
+        padding: 0;
         outline: none;
     }
 
@@ -89,6 +122,6 @@ pre.hidden {
     }
     
     @page :first {
-        margin-top: 8px;
+        margin-top: 16px;
     } 
 }

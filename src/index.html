@@ -28,7 +28,7 @@
                     <label for="operator-multiply">Multiplication (&times;)</label>
 
                     <input required type="radio" id="operator-divide" name="operator" value="/" disabled />
-                    <label for="operator-divide">Division (&div;)</label>
+                    <label for="operator-divide">Division ( / )</label>
 
                     <input required type="radio" id="operator-mix" name="operator" value="mix" disabled />
                     <label for="operator-mix">Mix</label>
@@ -72,14 +72,23 @@
                     <label for="ints-only">Integer (whole number) answers only</label>
                 </div>
 
+                <div>
+                    <label for="font-select">Font</label>
+                    <select  type="checkbox" id="font-select" name="font-select" disabled>
+                        <option value="monotype">System</option>
+                        <option value="dot-matrix" selected>Dot Matrix</option>
+                        <option value="noto-mono" selected>Noto Mono</option>
+                    </select>
+                </div>
+
             </fieldset>
             
             
             <button type="submit" id="form-submit">Generate</button>
         </form>
         
+        <h2>Preview</h2>
         <div id="actions">
-            <hr>
             <div>
                 <input type="checkbox" id="show-answers" name="show-answers">
                 <label for="show-answers">Show answers</label>
@@ -88,10 +97,10 @@
             <button type="button" id="print-button">Print</button>
         </div>
 
-        <div id="page">
+        <div id="page" class="hidden">
             <div id="page-header">
-                <div>NAME: <span class="underline"></span></div>
-                <div>DATE: <span class="underline"></span></div>
+                <div>NAME: _______________</div>
+                <div>DATE: __________</div>
             </div>
             <div id="math-problems"></div>
         </div>
