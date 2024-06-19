@@ -106,10 +106,6 @@ function generateMathProblems(options) {
 
   for (let i = 0; i < options.numProblems; i++) {
     const leftOperand = generateRandInt(options.min, options.max);
-    
-    // avoid divide by zero
-    if (options.operator === "/" && options.min == 0) min = 1; 
-
     const rightOperand = generateRandInt(options.min, options.max);
     
     let operands = [leftOperand, rightOperand];
@@ -117,6 +113,12 @@ function generateMathProblems(options) {
     // biggest number first for subtracting
     if (options.noNegatives || options.descOrder) {
       operands.sort((a, b) => (b - a)); 
+    }
+
+    // avoid divide by zero
+    if (options.operator === "/" && operands[1] === 0) {
+      console.log(i, ": DIVISION BY ZERO!", operands);
+      operands[1] = generateRandInt(1, options.max);
     }
 
     const answer = getAnswer(operands[0], operands[1], options.operator);
@@ -142,8 +144,21 @@ function writeProblems(problems, withAnswer = false) {
     const problemElement = document.createElement("pre");
     problemElement.classList.add("problem");
 
+    let operatorChar = "";
+    switch (problem.operator) {
+      case "/":
+        operatorChar = String.fromCharCode(247); // ÷ char
+        break;
+      case "*":
+        operatorChar = String.fromCharCode(215); // × char
+        break;
+      default:
+        operatorChar = problem.operator;
+        break;
+    }
+
     const line1 = ` ${problem.left}`;
-    const line2 = `${problem.operator === '*' ? 'x': problem.operator} ${problem.right}`;
+    const line2 = `${operatorChar} ${problem.right}`;
     const line3 = "-".repeat(line2.length);
     problemElement.textContent = [line1, line2, line3].join("\n");
     
