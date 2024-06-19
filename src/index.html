@@ -9,11 +9,13 @@
     <script src="script.js" defer></script>
 </head>
 <body>
-    <main>
+    <header>
         <h1>Math Sheets</h1>
         
         <p>A math problem generator. Use the form options below to specify what kind of problems to generate.</p>
-
+        <p>This site is open-source. Comments or bugs? File an issue on <a href="https://github.com/sphars/math-sheets/issues">GitHub</a>.</p>
+    </header>
+    <main>
         <form id="input-form">
             <fieldset>
                 <legend>Operator</legend>
@@ -68,22 +70,13 @@
                 </div>
 
                 <div>
-                    <input type="checkbox" id="ints-only" name="ints-only" disabled>
+                    <input type="checkbox" id="ints-only" name="ints-only">
                     <label for="ints-only">Integer (whole number) answers only</label>
                 </div>
 
                 <div>
                     <input type="checkbox" id="long-div-notation" name="long-div-notation" disabled>
                     <label for="long-div-notation">Long division notation</label>
-                </div>
-
-                <div>
-                    <label for="font-select">Font</label>
-                    <select  type="checkbox" id="font-select" name="font-select" disabled>
-                        <option value="monotype">System</option>
-                        <option value="dot-matrix" selected>Dot Matrix</option>
-                        <option value="noto-mono">Noto Mono</option>
-                    </select>
                 </div>
 
             </fieldset>
@@ -95,6 +88,17 @@
         <h2>Preview</h2>
         <div id="actions">
             <div>
+                <label for="font-select">Font</label>
+                <select type="checkbox" id="font-select" name="font-select" form="input-form">
+                    <option value="system">System</option>
+                    <option value="dotrice">Dot Matrix</option>
+                    <option value="noto">Noto Mono</option>
+                    <option value="roboto" selected>Roboto Mono</option>
+                </select>
+
+                <input type="checkbox" id="with-header" name="with-header">
+                <label for="with-header">With header</label>                
+
                 <input type="checkbox" id="show-answers" name="show-answers">
                 <label for="show-answers">Show answers</label>
             </div>
@@ -102,16 +106,15 @@
             <button type="button" id="print-button">Print</button>
         </div>
 
-        <div id="page" class="hidden">
-            <div id="page-header">
-                <div>NAME: _______________</div>
-                <div>DATE: __________</div>
+        <div id="page-wrapper">
+            <div id="page" class="d-none">
+                <div id="page-header" class="hidden">
+                    <div>NAME: _______________</div>
+                    <div>DATE: __________</div>
+                </div>
+                <div id="page-content"></div>
             </div>
-            <div id="math-problems"></div>
         </div>
     </main>
-    <footer>
-        <p>This site is open-source. Comments or feedback can be given on GitHub.</p>
-    </footer>
 </body>
 </html>

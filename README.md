@@ -18,6 +18,7 @@ Built using just HTML, CSS and JavaScript in a few hours. It's at the MVP stage 
 - Additional options
 - Styling
 - Rewriting using some JS library for better management of DOM manipulation
+- Saving via URL parameters (may need a seed or something for random number generation)
 
 
 ## Credits

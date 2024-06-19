@@ -1,13 +1,27 @@
 @font-face {
     font-family: 'Dotrice';
-    src: url('/assets/Dotrice-Regular.otf') format('opentype');
+    src: url('/assets/fonts/Dotrice/Dotrice-Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Roboto Mono";
+    src: url("/assets/fonts/Roboto_Mono/RobotoMono-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Noto Sans Mono";
+    src: url("/assets/fonts/Noto_Sans_Mono/NotoSansMono-Regular.ttf") format("truetype");
     font-weight: normal;
     font-style: normal;
 }
 
 :root {
     --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    --font-mono: 'Dotrice', monospace;
+    --font-mono: monospace;
 }
 
 html {
@@ -28,13 +42,17 @@ input[type="number"] {
     width: 60px;
 }
 
+#page-wrapper {
+    max-height: 12in;
+    overflow: auto;
+}
+
 #page {
-    max-height: 512px;
-    overflow-y: auto;
     width: 8.5in;
-    margin: 0 auto;
-    padding: 3rem;
-    outline: 1px solid #888;
+    height: 11in;
+    margin: 8px auto;
+    padding: 1rem 3.5rem 0 3.5rem;
+    border: 1px solid #888;
 }
 
 #page-header {
@@ -48,26 +66,32 @@ input[type="number"] {
 }
 
 
-#math-problems {
+.math-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    row-gap: 2.25rem;
+    row-gap: 2rem;
     margin: 1rem 0;
 }
 
-#math-problems > div {
+.math-grid > div {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
+    padding-right: 25%;
 }
 
-#math-problems > div > div{
+.math-grid > div > div{
     display: flex;
     flex-direction: column;
 }
 
+.page-footer {
+    text-align: center;
+    font-size: 12px;
+    width: 100%;
+}
+
 pre {
     display: inline-block;
-    padding-bottom: 4px;
     margin: 0;
 
     font-size: 20px;
@@ -75,18 +99,15 @@ pre {
     font-variant-numeric: tabular-nums;
     text-align: right;
     font-family: var(--font-mono);
-}
-
-pre.problem {
-    /* border-bottom: 1px dotted #222222; */
+    line-height: 1.25em;
 }
 
 .hidden {
     visibility: hidden;
 }
 
-#page #page-header {
-    /* display: none; */
+.d-none {
+    display: none;
 }
 
 .underline {
@@ -96,6 +117,7 @@ pre.problem {
 }
 
 @media print {
+    header,
     h1,
     h2,
     p,
@@ -104,18 +126,27 @@ pre.problem {
         display: none;
     }
 
+    #page-wrapper {
+        display: block;
+        overflow: initial;
+    }
+    
     #page {
-        max-height: none;
-        overflow-y: initial;
         width: unset;
+        height: unset;
         margin: 0;
         padding: 0;
-        outline: none;
+        border: none;
     }
 
     .page-break {
         page-break-after: always;
     }
+
+    .page-footer {
+        position: fixed;
+        bottom: 0;
+    }    
 
     @page {
         margin-top: 64px;   
