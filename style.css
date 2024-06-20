@@ -1,20 +1,20 @@
 @font-face {
     font-family: 'Dotrice';
-    src: url('/assets/fonts/Dotrice/Dotrice-Regular.otf') format('opentype');
+    src: url('./assets/fonts/Dotrice/Dotrice-Regular.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: "Roboto Mono";
-    src: url("/assets/fonts/Roboto_Mono/RobotoMono-Regular.ttf") format("truetype");
+    src: url("./assets/fonts/Roboto_Mono/RobotoMono-Regular.ttf") format("truetype");
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: "Noto Sans Mono";
-    src: url("/assets/fonts/Noto_Sans_Mono/NotoSansMono-Regular.ttf") format("truetype");
+    src: url("./assets/fonts/Noto_Sans_Mono/NotoSansMono-Regular.ttf") format("truetype");
     font-weight: normal;
     font-style: normal;
 }
