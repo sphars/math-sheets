@@ -1,25 +1,20 @@
 # Math Sheets
 
-Generating math worksheets in the browser, for printing or whatever.
+Generating simple math worksheets in the browser for printing or whatever. Inspired by the worksheets my dad printed for my siblings and I during the summer breaks (remembering how it looked purely by memory).
 
-Inspired by the worksheets my dad printed for my siblings and I during the summer breaks (purely by memory).
+Built using just HTML, CSS and vanilla JavaScript in a few hours. 
 
 ## Status
 
-Built using just HTML, CSS and JavaScript in a few hours. It's at the MVP stage right now, with a couple features still in-progress:
+It's at the MVP stage right now, with a couple features still in-progress:
 
-- Rewriting division problems to use different notation, such as the long-division notation:
-```
-   31.75
- _______      
-4)127.00
-```
-- Creating problems using mix of operators
-- Additional options
-- Styling
-- Rewriting using some JS library for better management of DOM manipulation
-- Saving via URL parameters (may need a seed or something for random number generation)
+- Use alternative notations, such as the long-division notation
+- Creating problems with randonly chosen operators
+- Better styling
+- Use JS library for better DOM manipulation
+- Saving config via URL parameters
 
+See [ISSUES](https://github.com/sphars/math-sheets/issues) for more details.
 
 ## Credits
 
@@ -27,3 +22,4 @@ Built using just HTML, CSS and JavaScript in a few hours. It's at the MVP stage 
   - Division Sign `÷`
   - Multiplication Sign `×`
 - [Glyphr Studio](https://www.glyphrstudio.com/) for font editing
+- My dad for making us do math during summer breaks
