@@ -1,0 +1,158 @@
+@font-face {
+    font-family: 'Dotrice';
+    src: url('/assets/fonts/Dotrice/Dotrice-Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Roboto Mono";
+    src: url("/assets/fonts/Roboto_Mono/RobotoMono-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Noto Sans Mono";
+    src: url("/assets/fonts/Noto_Sans_Mono/NotoSansMono-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+:root {
+    --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    --font-mono: monospace;
+}
+
+html {
+    box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+
+html {
+    font-family: var(--font-sans);
+}
+
+input[type="number"] {
+    width: 60px;
+}
+
+#page-wrapper {
+    max-height: 12in;
+    overflow: auto;
+}
+
+#page {
+    width: 8.5in;
+    height: 11in;
+    margin: 8px auto;
+    padding: 1rem 3.5rem 0 3.5rem;
+    border: 1px solid #888;
+}
+
+#page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    font-family: var(--font-mono);
+    font-size: 20px;
+    letter-spacing: 2px;
+}
+
+
+.math-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    row-gap: 2rem;
+    margin: 1rem 0;
+}
+
+.math-grid > div {
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 25%;
+}
+
+.math-grid > div > div{
+    display: flex;
+    flex-direction: column;
+}
+
+.page-footer {
+    text-align: center;
+    font-size: 12px;
+    width: 100%;
+}
+
+pre {
+    display: inline-block;
+    margin: 0;
+
+    font-size: 20px;
+    letter-spacing: .125em;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    font-family: var(--font-mono);
+    line-height: 1.25em;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.d-none {
+    display: none;
+}
+
+.underline {
+    border-bottom: 1px solid black;
+    display: inline-block;
+    width: 200px;
+}
+
+@media print {
+    header,
+    h1,
+    h2,
+    p,
+    #input-form,
+    #actions {
+        display: none;
+    }
+
+    #page-wrapper {
+        display: block;
+        overflow: initial;
+    }
+    
+    #page {
+        width: unset;
+        height: unset;
+        margin: 0;
+        padding: 0;
+        border: none;
+    }
+
+    .page-break {
+        page-break-after: always;
+    }
+
+    .page-footer {
+        position: fixed;
+        bottom: 0;
+    }    
+
+    @page {
+        margin-top: 64px;   
+    }
+    
+    @page :first {
+        margin-top: 16px;
+    } 
+}
