@@ -174,125 +174,48 @@ function generateMathProblems(options) {
 }
 
 function writeProblems(problems, withAnswer = false) {
-  const mathProblemNodes = [];
-  const footer = createPageFooter();
-
-  // divide the problems into groups
   const problemGroups = chunkArray(problems, itemsPerPage);
 
-  for (const group of problemGroups) {
-    // create the grid element
-    const grid = document.createElement("div");
-    grid.classList.add("math-grid");
-
-    // array of grid item elements
-    const gridItems = [];
-
-    // loop through the problems in the group and add it to the grid
-    for (const [index, problem] of group.entries()) {
-      const gridItem = document.createElement("div");
-      const preWrapper = document.createElement("div");
+  const mathProblemNodes = problemGroups.map(group => {
+    const gridItems = group.map(problem => {
+      const operatorChar = {
+        '/': '÷',
+        '*': '×'
+      }[problem.operator] || problem.operator;
       
-      const problemElement = document.createElement("pre");
-      problemElement.classList.add("problem");
-  
-      let operatorChar = "";
-      switch (problem.operator) {
-        case "/":
-          operatorChar = String.fromCharCode(247); // ÷ char
-          break;
-        case "*":
-          operatorChar = String.fromCharCode(215); // × char
-          break;
-        default:
-          operatorChar = problem.operator;
-          break;
+      // write the individual lines of the problem, with padding as needed
+      let line1 = `${problem.left}`;
+      let line2 = `${operatorChar} ${problem.right}`;
+      const spaceToAdd = Math.max(problem.left.toString().length, problem.right.toString().length) + 2 - line2.length;
+      if (spaceToAdd > 0) {
+        line2 = `${operatorChar}${" ".repeat(spaceToAdd)}${problem.right}`;
       }
-  
-      const line1 = ` ${problem.left}`;
-      const line2 = `${operatorChar} ${problem.right}`;
-      const line3 = "-".repeat(line2.length);
-      problemElement.textContent = [line1, line2, line3].join("\n");
-      
-      const answerElement = document.createElement("pre");
-      answerElement.classList.add("answer");
-      if (!withAnswer) answerElement.classList.add("hidden");
-      answerElement.textContent = problem.answer;
-  
-      preWrapper.appendChild(problemElement);
-      preWrapper.appendChild(answerElement);
-  
-      gridItem.appendChild(preWrapper);
 
-      gridItems.push(gridItem);
-    }
+      const line3 = "-".repeat(Math.max(line1.length, line2.length));
 
-    // add the items to the grid
-    grid.replaceChildren(...gridItems);
+      return `
+        <div class="grid-item">
+          <div class="pre-wrapper">
+            <pre class="problem">${line1}\n${line2}\n${line3}</pre>
+            <pre class="answer ${withAnswer ? '' : 'hidden'}">${problem.answer}</pre>
+          </div>
+        </div>
+      `
+    }).join("");
 
-    // add the grid to the grids container
-    mathProblemNodes.push(grid);
+    return `<div class="math-grid">${gridItems}</div>`;
+  });
 
-    // // add a copy of the page footer
-    // mathProblemNodes.push(footer.cloneNode(true));
-  }
-
-  // for (const [index, problem] of problems.entries()) {
-  //   const gridItem = document.createElement("div");
-  //   const preWrapper = document.createElement("div");
-    
-  //   const problemElement = document.createElement("pre");
-  //   problemElement.classList.add("problem");
-
-  //   let operatorChar = "";
-  //   switch (problem.operator) {
-  //     case "/":
-  //       operatorChar = String.fromCharCode(247); // ÷ char
-  //       break;
-  //     case "*":
-  //       operatorChar = String.fromCharCode(215); // × char
-  //       break;
-  //     default:
-  //       operatorChar = problem.operator;
-  //       break;
-  //   }
-
-  //   const line1 = ` ${problem.left}`;
-  //   const line2 = `${operatorChar} ${problem.right}`;
-  //   const line3 = "-".repeat(line2.length);
-  //   problemElement.textContent = [line1, line2, line3].join("\n");
-    
-  //   const answerElement = document.createElement("pre");
-  //   answerElement.classList.add("answer");
-  //   if (!withAnswer) answerElement.classList.add("hidden");
-  //   answerElement.textContent = problem.answer;
-
-  //   preWrapper.appendChild(problemElement);
-  //   preWrapper.appendChild(answerElement);
-
-  //   gridItem.appendChild(preWrapper);
-
-  //   if ((index + 1) % itemsPerPage === 0) {
-  //     // add a page footer every 35 items
-  //     const pageFooter = createPageFooter();
-
-  //     // end the grid
-      
-  //   }
-
-  //   gridItems.push(gridItem);
-  // }
-
-  // insert the grid into the parent container
-  pageContent.replaceChildren(...mathProblemNodes);
-  pageContent.appendChild(footer);
+  const footer = createPageFooter();
+  pageContent.innerHTML = mathProblemNodes.join("") + footer;
 }
 
 function createPageFooter() {
-  const footerElement = document.createElement("div");
-  footerElement.classList.add("page-footer", "page-break");
-  footerElement.innerHTML = `Generated with <a href="#">mathsheets</a>`
-  return footerElement;
+ return `
+    <div class="page-footer page-break">
+      Generated with <a href="#">mathsheets</a>
+    </div>
+  `
 }
 
 function chunkArray(array, size) {
