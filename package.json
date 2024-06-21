@@ -1,0 +1,31 @@
+{
+  "name": "math-sheets",
+  "version": "0.1.0",
+  "description": "A simple website for printing math worksheets",
+  "scripts": {
+    "build": "node build.js",
+    "dev": "node dev.js",
+    "type-check": "tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sphars/math-sheets.git"
+  },
+  "author": "Spencer Harston",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sphars/math-sheets/issues"
+  },
+  "homepage": "https://github.com/sphars/math-sheets#readme",
+  "dependencies": {
+    "jspdf": "^2.5.1"
+  },
+  "devDependencies": {
+    "chokidar": "^3.6.0",
+    "concurrently": "^8.2.2",
+    "esbuild": "^0.21.5",
+    "fs-extra": "^11.2.0",
+    "serve": "^14.2.3",
+    "typescript": "^5.5.2"
+  }
+}

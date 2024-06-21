@@ -1,6 +1,28 @@
+// --- Imports
+import { jsPDF } from "jspdf";
+
+// --- Interfaces
+interface Problem {
+  left: number,
+  right: number,
+  operator: string,
+  answer: number
+}
+
+interface GeneratorOptions {
+  operator: string,
+  min: number,
+  max: number,
+  numProblems: number,
+  descOrder: boolean,
+  noNegatives: boolean,
+  intsOnly: boolean,
+  fontSelect: string
+}
+
 // --- Script vars
 const itemsPerPage = 35;
-const fontFamilies = {
+const fontFamilies: Record<string, string> = {
   system: "'Nimbus Mono PS', 'Courier New', Consolas, monospace",
   noto: "'Noto Sans Mono', monospace",
   dotrice: "'Dotrice', monospace",
@@ -10,14 +32,14 @@ const fontFamilies = {
 // --- Elements
 const page = document.getElementById("page");
 const pageContent = document.getElementById("page-content");
-const inputForm = document.getElementById("input-form");
-const showAnswersCheckbox = document.getElementById("show-answers");
+const inputForm = document.getElementById("input-form") as HTMLFormElement;
+const showAnswersCheckbox = document.getElementById("show-answers") as HTMLInputElement;
 const formSubmitButton = document.getElementById("form-submit");
 const printButton = document.getElementById("print-button");
-const numProblemsInput = document.getElementById("num-problems");
+const numProblemsInput = document.getElementById("num-problems") as HTMLInputElement;
 const pagesNote = document.getElementById("pages");
-const fontSelect = document.getElementById("font-select");
-const withHeaderCheckbox = document.getElementById("with-header");
+const fontSelect = document.getElementById("font-select") as HTMLInputElement;
+const withHeaderCheckbox = document.getElementById("with-header") as HTMLInputElement;
 
 
 // --- Event listeners
@@ -26,59 +48,58 @@ window.addEventListener("DOMContentLoaded", (event) => {
   updatePagesNote();
 });
 
-numProblemsInput.addEventListener("change", (event) => {
+numProblemsInput?.addEventListener("change", (event) => {
   updatePagesNote();
 });
 
-fontSelect.addEventListener("change", (event) => {
+fontSelect?.addEventListener("change", (event) => {
   setCSSVariable(document.documentElement, '--font-mono', fontFamilies[fontSelect.value]);
 });
 
-withHeaderCheckbox.addEventListener("click", (event) => {
+withHeaderCheckbox?.addEventListener("click", (event: any) => {
+  console.log("Header checkbox event: ", event);
   const pageHeader = document.getElementById("page-header");
 
-  if (event.target.checked) {
-    pageHeader.classList.remove("hidden");  
+  if (event.target?.checked) {
+    pageHeader?.classList.remove("hidden");  
   } else {
-    pageHeader.classList.add("hidden");
+    pageHeader?.classList.add("hidden");
   }
 });
 
-showAnswersCheckbox.addEventListener("click", (event) => {
-  const answerElements = pageContent.querySelectorAll("pre.answer");
+showAnswersCheckbox.addEventListener("click", (event: any) => {
+  const answerElements = pageContent?.querySelectorAll("pre.answer");
 
-  if (event.target.checked) {
-    answerElements.forEach(element => element.classList.remove("hidden"));
+  if (event.target?.checked) {
+    answerElements?.forEach(element => element.classList.remove("hidden"));
   } else {
-    answerElements.forEach(element => element.classList.add("hidden"));
+    answerElements?.forEach(element => element.classList.add("hidden"));
   }
 });
 
 inputForm.addEventListener('submit', (e) => {
   e.preventDefault();
-  const inputs = inputForm.elements;
+  const inputData = new FormData(inputForm);
 
-  mathProblemsList = [];
-  
-  const options = {
-    operator: inputs["operator"].value,
-    min: inputs["min-input"].value,
-    max: inputs["max-input"].value,
-    numProblems: inputs["num-problems"].value,
-    descOrder: inputs["desc-order"].checked,
-    noNegatives: inputs["no-negatives"].checked,
-    intsOnly: inputs["ints-only"].checked,
-    fontSelect: inputs["font-select"].value
+  const options: GeneratorOptions = {
+    operator: inputData.get("operator") as string,
+    min: inputData.get("min-input") as unknown as number,
+    max: inputData.get("max-input") as unknown as number,
+    numProblems: inputData.get("num-problems") as unknown as number,
+    descOrder: inputData.get("desc-order") as unknown as boolean,
+    noNegatives: inputData.get("no-negatives") as unknown as boolean,
+    intsOnly: inputData.get("ints-only") as unknown as boolean,
+    fontSelect: inputData.get("font-select") as string
   }
 
   const problems = generateMathProblems(options);
   writeProblems(problems, showAnswersCheckbox.checked);
   setCSSVariable(document.documentElement, "--font-mono", fontFamilies[options.fontSelect]);
-  page.classList.remove("d-none");
+  page?.classList.remove("d-none");
 });
 
-printButton.addEventListener("click", () => {
-  if (!pageContent.hasChildNodes()) return;
+printButton?.addEventListener("click", () => {
+  if (!pageContent?.hasChildNodes()) return;
   let currTitle = document.title;
   document.title = showAnswersCheckbox.checked ? "math-sheets_answers" : "math-sheets";
   window.print();
@@ -86,27 +107,27 @@ printButton.addEventListener("click", () => {
 })
 
 // --- Functions
-function setCSSVariable(element, variable, value) {
+function setCSSVariable(element: HTMLElement, variable: string, value: string) {
   element.style.setProperty(variable, value);
 }
 
-function getNumPages(numProblems) {
+function getNumPages(numProblems: number) {
   return Math.ceil((numProblems - itemsPerPage) / itemsPerPage) + 1;
 }
 
 function updatePagesNote() {
-  const pages = getNumPages(numProblemsInput.value);
-  pagesNote.textContent = `${pages} page${pages === 1 ? "" : "s"} (${itemsPerPage} problems per page)`;
+  const pages = getNumPages(+numProblemsInput.value);
+  if (pagesNote) pagesNote.textContent = `${pages} page${pages === 1 ? "" : "s"} (${itemsPerPage} problems per page)`;
 }
 
-function generateRandInt(min, max) {
+function generateRandInt(min: number, max: number) {
   // integers only for now
   const minCeiled = Math.ceil(min);
   const maxFloored = Math.floor(max);
   return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled); // The maximum is inclusive and the minimum is inclusive
 }
 
-function getAnswer(left, right, operator) {
+function getAnswer(left: number, right: number, operator: string) {
   let answer;
   switch (operator) {
     case "+":
@@ -129,7 +150,7 @@ function getAnswer(left, right, operator) {
   return answer;
 }
 
-function getOperands(options){
+function getOperands(options: GeneratorOptions){
   const leftOperand = generateRandInt(options.min, options.max);
   const rightOperand = generateRandInt(options.min, options.max);
   
@@ -148,7 +169,7 @@ function getOperands(options){
   return operands;
 }
 
-function generateMathProblems(options) {
+function generateMathProblems(options: GeneratorOptions) {
   let problems = [];
 
   for (let i = 0; i < options.numProblems; i++) {
@@ -173,7 +194,7 @@ function generateMathProblems(options) {
   return problems;
 }
 
-function writeProblems(problems, withAnswer = false) {
+function writeProblems(problems: Problem[], withAnswer: boolean = false) {
   const problemGroups = chunkArray(problems, itemsPerPage);
 
   const mathProblemNodes = problemGroups.map(group => {
@@ -207,10 +228,10 @@ function writeProblems(problems, withAnswer = false) {
   });
 
   const footer = createPageFooter();
-  pageContent.innerHTML = mathProblemNodes.join("") + footer;
+  if (pageContent) pageContent.innerHTML = mathProblemNodes.join("") + footer;
 }
 
-function createPageFooter() {
+function createPageFooter(): string {
  return `
     <div class="page-footer page-break">
       Generated with <a href="#">mathsheets</a>
@@ -218,8 +239,8 @@ function createPageFooter() {
   `
 }
 
-function chunkArray(array, size) {
-  const chunks = [];
+function chunkArray<T>(array: T[], size: number): T[][] {
+  const chunks: T[][] = [];
   for (let i = 0; i < array.length; i += size) {
     chunks.push(array.slice(i, i + size));
   }
