@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "description": "A simple website for printing math worksheets",
   "scripts": {
-    "build": "node build.js",
-    "dev": "node dev.js",
-    "type-check": "tsc --noEmit"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,7 @@
     "jspdf": "^2.5.1"
   },
   "devDependencies": {
-    "typescript": "^5.5.2"
+    "typescript": "^5.5.2",
+    "vite": "^5.3.1"
   }
 }

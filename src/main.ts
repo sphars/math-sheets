@@ -1,5 +1,6 @@
 // --- Imports
-import { jsPDF } from "jspdf";
+import "./style.css";
+// import { jsPDF } from "jspdf";
 
 // --- Interfaces
 interface Problem {
