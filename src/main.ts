@@ -1,5 +1,9 @@
 // --- Imports
 import "./style.css";
+import logo from "./assets/logo.svg";
+import "@fontsource-variable/roboto-flex";
+import "@fontsource/noto-sans-mono";
+import "@fontsource/roboto-mono";
 // import { jsPDF } from "jspdf";
 
 // --- Interfaces
@@ -34,13 +38,14 @@ const fontFamilies: Record<string, string> = {
 const page = document.getElementById("page");
 const pageContent = document.getElementById("page-content");
 const inputForm = document.getElementById("input-form") as HTMLFormElement;
-const showAnswersCheckbox = document.getElementById("show-answers") as HTMLInputElement;
+const withAnswersCheckbox = document.getElementById("with-answers") as HTMLInputElement;
 const formSubmitButton = document.getElementById("form-submit");
 const printButton = document.getElementById("print-button");
 const numProblemsInput = document.getElementById("num-problems") as HTMLInputElement;
 const pagesNote = document.getElementById("pages");
 const fontSelect = document.getElementById("font-select") as HTMLInputElement;
 const withHeaderCheckbox = document.getElementById("with-header") as HTMLInputElement;
+const logoArea = document.querySelector<HTMLAnchorElement>("#logo")!;
 
 
 // --- Event listeners
@@ -68,7 +73,7 @@ withHeaderCheckbox?.addEventListener("click", (event: any) => {
   }
 });
 
-showAnswersCheckbox.addEventListener("click", (event: any) => {
+withAnswersCheckbox.addEventListener("click", (event: any) => {
   const answerElements = pageContent?.querySelectorAll("pre.answer");
 
   if (event.target?.checked) {
@@ -94,7 +99,7 @@ inputForm.addEventListener('submit', (e) => {
   }
 
   const problems = generateMathProblems(options);
-  writeProblems(problems, showAnswersCheckbox.checked);
+  writeProblems(problems, withAnswersCheckbox.checked);
   setCSSVariable(document.documentElement, "--font-mono", fontFamilies[options.fontSelect]);
   page?.classList.remove("d-none");
 });
@@ -102,10 +107,13 @@ inputForm.addEventListener('submit', (e) => {
 printButton?.addEventListener("click", () => {
   if (!pageContent?.hasChildNodes()) return;
   let currTitle = document.title;
-  document.title = showAnswersCheckbox.checked ? "math-sheets_answers" : "math-sheets";
+  document.title = withAnswersCheckbox.checked ? "math-sheets_answers" : "math-sheets";
   window.print();
   document.title = currTitle;
-})
+});
+
+// --- Apply
+// logoArea.innerHTML = `<img src="${logo}" class="logo" alt="Math Sheets logo" />`;
 
 // --- Functions
 function setCSSVariable(element: HTMLElement, variable: string, value: string) {

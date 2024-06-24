@@ -1,31 +1,15 @@
 @font-face {
     font-family: 'Dotrice';
-    src: url('./assets/fonts/Dotrice/Dotrice-Regular.otf') format('opentype');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: "Roboto Mono";
-    src: url("./assets/fonts/Roboto_Mono/RobotoMono-Regular.ttf") format("truetype");
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: "Noto Sans Mono";
-    src: url("./assets/fonts/Noto_Sans_Mono/NotoSansMono-Regular.ttf") format("truetype");
+    src: url('/fonts/Dotrice/Dotrice-Regular.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
 }
 
 :root {
     --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    --font-sans-var: "Roboto Flex Variable", system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     --font-mono: monospace;
-}
-
-html {
-    box-sizing: border-box;
+    --content-width: 1400px;
 }
 
 *,
@@ -35,23 +19,137 @@ html {
 }
 
 html {
+    box-sizing: border-box;
+}
+
+body {
     font-family: var(--font-sans);
 }
 
-input[type="number"] {
-    width: 60px;
+@supports (font-variation-settings: normal) {
+    body {
+        font-family: var(--font-sans-var);
+    }
 }
 
+body > * {
+    width: 100%;
+}
+
+nav,
+main > * {
+    max-width: var(--content-width);
+    margin: 0 auto;
+}
+
+header {
+    background-color: #24273a;
+}
+
+nav {
+    width: 100%;
+    display: flex;
+    justify-content: space-between; 
+}
+
+/* Logo */
+#logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    column-gap: 16px;
+    background-color: #24273a;
+    padding: 16px;
+}
+
+#logo .icon {
+    width: 42px;
+    height: 42px;
+}
+
+#logo .icon img {
+    width: 42px;
+    height: 42px;
+}
+
+#logo .logo-text {
+    color: #cad3f5;
+    font-size: 32px;
+}
+
+.content-wrapper {
+    display: block;
+}
+
+.information {
+    margin: 2rem auto;
+}
+
+.form-wrapper {
+}
+
+.preview-wrapper {
+}
+
+#actions {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+
+/* Form styles */
+#input-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: .5rem;
+}
+
+#input-form fieldset {
+    width: 100%;
+}
+
+.form-field {
+    width: 100%;
+    margin: .5rem 0;
+}
+
+.form-field > * {
+    display: block;
+}
+
+.form-field label {
+    margin-bottom: 4px;
+}
+
+input,
+select {
+    font-family: inherit;
+}
+
+option {
+    font-family: inherit;
+}
+
+form input[type="number"] {
+    width: 100px;
+}
+
+/* The generated "page" */
 #page-wrapper {
     max-height: 12in;
+    width: 100%;
     overflow: auto;
 }
 
 #page {
-    width: 8.5in;
-    height: 11in;
+    /* width: 8.5in;
+    height: 11in; */
     margin: 8px auto;
-    padding: 1rem 3.5rem 0 3.5rem;
+    padding: 1rem;
     border: 1px solid #888;
 }
 
@@ -59,6 +157,7 @@ input[type="number"] {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    column-gap: 16px;
     margin-bottom: 2rem;
     font-family: var(--font-mono);
     font-size: 20px;
@@ -102,6 +201,17 @@ pre {
     line-height: 1.25em;
 }
 
+button {
+    background-color: #24273a;
+    color: #cad3f5;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-family: inherit;
+    text-align: center;
+    font-size: 1.125rem;
+}
+
 .hidden {
     visibility: hidden;
 }
@@ -114,6 +224,14 @@ pre {
     border-bottom: 1px solid black;
     display: inline-block;
     width: 200px;
+}
+
+@media (min-width: 768px) {
+    .content-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 1rem;
+    }
 }
 
 @media print {
