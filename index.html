@@ -1,160 +1,207 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Math Sheets</title>
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
-</head>
-<body>
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+  </head>
+  <body>
     <header>
-        <nav>
-            <a href="/" id="logo">
-                <div class="icon"><img width="42" height="42" src="/favicons/android-chrome-192x192.png" alt="Math Sheets logo"></div>
-                <div class="logo-text">Math Sheets</div>
-            </a>
-        </nav>
+      <nav>
+        <a href="/" id="logo">
+          <div class="icon">
+            <img
+              width="42"
+              height="42"
+              src="/favicons/android-chrome-192x192.png"
+              alt="Math Sheets logo"
+            />
+          </div>
+          <div class="logo-text">Math Sheets</div>
+        </a>
+      </nav>
     </header>
 
     <main>
-        <div class="information">
-            <p>A math problem generator. Use the form options below to specify what kind of problems to generate.</p>
-            <p>This site is open-source and is licensed under the MIT license. Have any comments or bugs to report? File an issue on <a href="https://github.com/sphars/math-sheets/issues" target="_blank">GitHub</a>.</p>
+      <div class="information">
+        <p>
+          A math problem generator. Use the form options below to specify what kind of problems to
+          generate.
+        </p>
+        <p>
+          This site is open-source and is licensed under the MIT license. Have any comments or bugs
+          to report? File an issue on
+          <a href="https://github.com/sphars/math-sheets/issues" target="_blank">GitHub</a>.
+        </p>
+      </div>
+
+      <div class="content-wrapper">
+        <div class="form-wrapper">
+          <h2>Generate Problems</h2>
+          <form id="input-form">
+            <fieldset>
+              <legend>Operator</legend>
+              <div>
+                <input required type="radio" id="operator-add" name="operator" value="+" checked />
+                <label for="operator-add">Addition (&plus;)</label>
+
+                <input required type="radio" id="operator-subtract" name="operator" value="-" />
+                <label for="operator-subtract">Subtraction (&minus;)</label>
+
+                <input required type="radio" id="operator-multiply" name="operator" value="*" />
+                <label for="operator-multiply">Multiplication (&times;)</label>
+
+                <input required type="radio" id="operator-divide" name="operator" value="/" />
+                <label for="operator-divide">Division (&divide;)</label>
+
+                <input
+                  required
+                  type="radio"
+                  id="operator-mix"
+                  name="operator"
+                  value="mix"
+                  disabled
+                />
+                <label for="operator-mix">Mix</label>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Operand Values</legend>
+              <div class="form-field">
+                <label for="min-input">Minimum</label>
+                <input
+                  required
+                  type="number"
+                  id="min-input"
+                  name="min-input"
+                  min="0"
+                  max="999"
+                  step="1"
+                  value="0"
+                />
+              </div>
+
+              <div class="form-field">
+                <label for="max-input">Maximum</label>
+                <input
+                  required
+                  type="number"
+                  id="max-input"
+                  name="max-input"
+                  min="0"
+                  max="1000"
+                  step="1"
+                  value="100"
+                />
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Options</legend>
+              <div class="form-field">
+                <label for="num-problems">Number of problems</label>
+                <div>
+                  <input
+                    required
+                    type="number"
+                    id="num-problems"
+                    name="num-problems"
+                    min="1"
+                    max="1000"
+                    step="1"
+                    value="35"
+                  />
+                  <span id="pages"></span>
+                </div>
+              </div>
+
+              <div class="form-field">
+                <div>
+                  <input type="checkbox" id="desc-order" name="desc-order" checked />
+                  <label for="desc-order">Operands in descending order</label>
+                </div>
+              </div>
+
+              <div class="form-field">
+                <div>
+                  <input type="checkbox" id="no-negatives" name="no-negatives" />
+                  <label for="no-negatives">No negative answers</label>
+                </div>
+              </div>
+
+              <div class="form-field">
+                <div>
+                  <input type="checkbox" id="ints-only" name="ints-only" />
+                  <label for="ints-only">Integer (whole number) answers only</label>
+                </div>
+              </div>
+
+              <div class="form-field">
+                <div>
+                  <input type="checkbox" id="long-div-notation" name="long-div-notation" disabled />
+                  <label for="long-div-notation">Long division notation</label>
+                </div>
+              </div>
+            </fieldset>
+
+            <div>
+              <button type="submit" id="form-submit">Generate Problems</button>
+            </div>
+          </form>
         </div>
 
-        <div class="content-wrapper">
-            <div class="form-wrapper">
-                <h2>Generate</h2>
-                <form id="input-form">
-                    <fieldset>
-                        <legend>Operator</legend>
-                        <div>
-                            <input required type="radio" id="operator-add" name="operator" value="+" checked />
-                            <label for="operator-add">Addition (&plus;)</label>
+        <div class="preview-wrapper">
+          <h2>Preview</h2>
+          <div id="actions">
+            <div>
+              <div class="form-field">
+                <label for="font-select">Font</label>
+                <select
+                  type="checkbox"
+                  id="font-select"
+                  name="font-select"
+                  form="input-form"
+                ></select>
+              </div>
 
-                            <input required type="radio" id="operator-subtract" name="operator" value="-" />
-                            <label for="operator-subtract">Subtraction (&minus;)</label>
+              <div class="form-field">
+                <div>
+                  <input type="checkbox" id="with-header" name="with-header" />
+                  <label for="with-header">With header</label>
+                </div>
+              </div>
 
-                            <input required type="radio" id="operator-multiply" name="operator" value="*" />
-                            <label for="operator-multiply">Multiplication (&times;)</label>
-
-                            <input required type="radio" id="operator-divide" name="operator" value="/" />
-                            <label for="operator-divide">Division (&divide;)</label>
-
-                            <input required type="radio" id="operator-mix" name="operator" value="mix" disabled />
-                            <label for="operator-mix">Mix</label>
-
-                        </div>
-                    </fieldset>
-
-                    <fieldset>
-                        <legend>Operand Values</legend>
-                        <div class="form-field">
-                            <label for="min-input">Minimum</label>
-                            <input required type="number" id="min-input" name="min-input" min="0" max="999" step="1" value="0">
-                        </div>
-
-                        <div class="form-field">
-                            <label for="max-input">Maximum</label>
-                            <input required type="number" id="max-input" name="max-input" min="0" max="1000" step="1" value="100">                           
-                        </div>
-                    </fieldset>
-
-                    <fieldset>
-                        <legend>Options</legend>
-                        <div class="form-field">
-                            <label for="num-problems">Number of problems</label>
-                            <div>
-                                <input required type="number" id="num-problems" name="num-problems" min="1" max="1000" step="1" value="35">
-                                <span id="pages"></span>
-                            </div>
-                        </div>
-
-                        <div class="form-field">
-                            <div>
-                                <input type="checkbox" id="desc-order" name="desc-order" checked>
-                                <label for="desc-order">Operands in descending order</label>
-                            </div>
-                        </div>
-
-                        <div class="form-field">
-                            <div>
-                                <input type="checkbox" id="no-negatives" name="no-negatives">
-                                <label for="no-negatives">No negative answers</label>
-                            </div>
-                        </div>
-
-                        <div class="form-field">
-                            <div>
-                                <input type="checkbox" id="ints-only" name="ints-only">
-                                <label for="ints-only">Integer (whole number) answers only</label>
-                            </div>
-                        </div>
-
-                        <div class="form-field">
-                            <div>
-                                <input type="checkbox" id="long-div-notation" name="long-div-notation" disabled>
-                                <label for="long-div-notation">Long division notation</label>
-                            </div>
-                        </div>
-
-                    </fieldset>
-                    
-                    <div>
-                        <button type="submit" id="form-submit">Generate</button>
-                    </div>
-                </form>
+              <div class="form-field">
+                <div>
+                  <input type="checkbox" id="with-answers" name="show-answers" />
+                  <label for="with-answers">With answers</label>
+                </div>
+              </div>
             </div>
 
-            <div class="preview-wrapper">
-                <h2>Preview</h2>
-                <div id="actions">
-                    <div>
-                        <div class="form-field">
-                            <label for="font-select">Font</label>
-                            <select type="checkbox" id="font-select" name="font-select" form="input-form">
-                                <option value="system">System</option>
-                                <option value="dotrice">Dot Matrix</option>
-                                <option value="noto">Noto Mono</option>
-                                <option value="roboto" selected>Roboto Mono</option>
-                            </select>
-                        </div>
+            <button type="button" id="pdf-button">Generate PDF</button>
+            <!-- <button type="button" id="print-button">Print</button> -->
+          </div>
 
-                        <div class="form-field">
-                            <div>
-                                <input type="checkbox" id="with-header" name="with-header">
-                                <label for="with-header">With header</label>                
-                            </div>
-                        </div>
-
-                        <div class="form-field">
-                            <div>
-                                <input type="checkbox" id="with-answers" name="show-answers">
-                                <label for="with-answers">With answers</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button type="button" id="print-button">Print</button>
-                </div>
-
-                <div id="page-wrapper">
-                    <div id="page" class="d-none">
-                        <div id="page-header" class="hidden">
-                            <div>NAME: _______________</div>
-                            <div>DATE: __________</div>
-                        </div>
-                        <div id="page-content"></div>
-                    </div>
-                </div>
+          <div id="page-wrapper">
+            <div id="page" class="d-none">
+              <div id="page-header" class="hidden">
+                <div>NAME: _______________</div>
+                <div>DATE: __________</div>
+              </div>
+              <div id="page-content"></div>
             </div>
+          </div>
         </div>
+      </div>
     </main>
 
     <script src="src/main.ts" type="module"></script>
-</body>
+  </body>
 </html>

@@ -1,56 +1,48 @@
 // --- Imports
 import "./style.css";
 import logo from "./assets/logo.svg";
+import { Problem, GeneratorOptions, Font } from "./interfaces";
+import fontsData from "./fonts.json";
+
+// --- Library Imports
 import "@fontsource-variable/roboto-flex";
-import "@fontsource/noto-sans-mono";
-import "@fontsource/roboto-mono";
-// import { jsPDF } from "jspdf";
-
-// --- Interfaces
-interface Problem {
-  left: number,
-  right: number,
-  operator: string,
-  answer: number
-}
-
-interface GeneratorOptions {
-  operator: string,
-  min: number,
-  max: number,
-  numProblems: number,
-  descOrder: boolean,
-  noNegatives: boolean,
-  intsOnly: boolean,
-  fontSelect: string
-}
+import { jsPDF } from "jspdf";
+import { autoTable } from "jspdf-autotable";
 
 // --- Script vars
+const fonts: Font[] = fontsData.fonts.sort((a, b) => a.name.localeCompare(b.name));
 const itemsPerPage = 35;
-const fontFamilies: Record<string, string> = {
-  system: "'Nimbus Mono PS', 'Courier New', Consolas, monospace",
-  noto: "'Noto Sans Mono', monospace",
-  dotrice: "'Dotrice', monospace",
-  roboto: "'Roboto Mono', monospace"
-}
+let generatedProblems: Problem[] = [];
 
 // --- Elements
 const page = document.getElementById("page");
 const pageContent = document.getElementById("page-content");
 const inputForm = document.getElementById("input-form") as HTMLFormElement;
 const withAnswersCheckbox = document.getElementById("with-answers") as HTMLInputElement;
-const formSubmitButton = document.getElementById("form-submit");
-const printButton = document.getElementById("print-button");
+const formSubmitButton = document.getElementById("form-submit") as HTMLButtonElement;
+const printButton = document.getElementById("print-button") as HTMLButtonElement;
+const pdfButton = document.getElementById("pdf-button") as HTMLButtonElement;
 const numProblemsInput = document.getElementById("num-problems") as HTMLInputElement;
 const pagesNote = document.getElementById("pages");
-const fontSelect = document.getElementById("font-select") as HTMLInputElement;
+const fontSelect = document.getElementById("font-select") as HTMLSelectElement;
 const withHeaderCheckbox = document.getElementById("with-header") as HTMLInputElement;
 const logoArea = document.querySelector<HTMLAnchorElement>("#logo")!;
 
-
 // --- Event listeners
 window.addEventListener("DOMContentLoaded", (event) => {
-  setCSSVariable(document.documentElement, '--font-mono', fontFamilies[fontSelect.value]);
+  // setup the font select
+  fonts.forEach((font) => {
+    const opt = document.createElement("option") as HTMLOptionElement;
+    if (font.name === "Default") opt.selected = true;
+    (opt.value = font.name), (opt.text = font.name);
+    fontSelect.add(opt);
+  });
+
+  setCSSVariable(
+    document.documentElement,
+    "--font-mono",
+    fonts.find((font) => font.name === fontSelect.value)?.family!
+  );
   updatePagesNote();
 });
 
@@ -59,15 +51,18 @@ numProblemsInput?.addEventListener("change", (event) => {
 });
 
 fontSelect?.addEventListener("change", (event) => {
-  setCSSVariable(document.documentElement, '--font-mono', fontFamilies[fontSelect.value]);
+  setCSSVariable(
+    document.documentElement,
+    "--font-mono",
+    fonts.find((font) => font.name === fontSelect.value)?.family!
+  );
 });
 
 withHeaderCheckbox?.addEventListener("click", (event: any) => {
-  console.log("Header checkbox event: ", event);
   const pageHeader = document.getElementById("page-header");
 
   if (event.target?.checked) {
-    pageHeader?.classList.remove("hidden");  
+    pageHeader?.classList.remove("hidden");
   } else {
     pageHeader?.classList.add("hidden");
   }
@@ -77,13 +72,13 @@ withAnswersCheckbox.addEventListener("click", (event: any) => {
   const answerElements = pageContent?.querySelectorAll("pre.answer");
 
   if (event.target?.checked) {
-    answerElements?.forEach(element => element.classList.remove("hidden"));
+    answerElements?.forEach((element) => element.classList.remove("hidden"));
   } else {
-    answerElements?.forEach(element => element.classList.add("hidden"));
+    answerElements?.forEach((element) => element.classList.add("hidden"));
   }
 });
 
-inputForm.addEventListener('submit', (e) => {
+inputForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const inputData = new FormData(inputForm);
 
@@ -96,11 +91,17 @@ inputForm.addEventListener('submit', (e) => {
     noNegatives: inputData.get("no-negatives") as unknown as boolean,
     intsOnly: inputData.get("ints-only") as unknown as boolean,
     fontSelect: inputData.get("font-select") as string
-  }
+  };
 
-  const problems = generateMathProblems(options);
-  writeProblems(problems, withAnswersCheckbox.checked);
-  setCSSVariable(document.documentElement, "--font-mono", fontFamilies[options.fontSelect]);
+  generatedProblems.length = 0;
+  generatedProblems = generateMathProblems(options);
+  writeProblems(generatedProblems, withAnswersCheckbox.checked);
+  setCSSVariable(
+    document.documentElement,
+    "--font-mono",
+    fonts.find((font) => font.name === fontSelect.value)?.family!
+  );
+
   page?.classList.remove("d-none");
 });
 
@@ -110,6 +111,11 @@ printButton?.addEventListener("click", () => {
   document.title = withAnswersCheckbox.checked ? "math-sheets_answers" : "math-sheets";
   window.print();
   document.title = currTitle;
+});
+
+pdfButton?.addEventListener("click", () => {
+  if (generatedProblems.length === 0) return;
+  generatePDF(generatedProblems);
 });
 
 // --- Apply
@@ -126,7 +132,8 @@ function getNumPages(numProblems: number) {
 
 function updatePagesNote() {
   const pages = getNumPages(+numProblemsInput.value);
-  if (pagesNote) pagesNote.textContent = `${pages} page${pages === 1 ? "" : "s"} (${itemsPerPage} problems per page)`;
+  if (pagesNote)
+    pagesNote.textContent = `${pages} page${pages === 1 ? "" : "s"} (${itemsPerPage} problems per page)`;
 }
 
 function generateRandInt(min: number, max: number) {
@@ -152,22 +159,22 @@ function getAnswer(left: number, right: number, operator: string) {
       answer = left / right;
       // round to 3 decimal places
       answer = +answer.toFixed(3);
-      break;  
+      break;
     default:
-      throw new Error('Unsupported operator');
+      throw new Error("Unsupported operator");
   }
   return answer;
 }
 
-function getOperands(options: GeneratorOptions){
+function getOperands(options: GeneratorOptions) {
   const leftOperand = generateRandInt(options.min, options.max);
   const rightOperand = generateRandInt(options.min, options.max);
-  
+
   let operands = [leftOperand, rightOperand];
 
   // biggest number first for subtracting
   if (options.noNegatives || options.descOrder) {
-    operands.sort((a, b) => (b - a)); 
+    operands.sort((a, b) => b - a);
   }
 
   // avoid divide by zero
@@ -179,8 +186,6 @@ function getOperands(options: GeneratorOptions){
 }
 
 function generateMathProblems(options: GeneratorOptions) {
-  let problems = [];
-
   for (let i = 0; i < options.numProblems; i++) {
     let operands = getOperands(options);
     let answer = getAnswer(operands[0], operands[1], options.operator);
@@ -192,7 +197,7 @@ function generateMathProblems(options: GeneratorOptions) {
       } while (!Number.isInteger(answer));
     }
 
-    problems.push({
+    generatedProblems.push({
       left: operands[0],
       right: operands[1],
       operator: options.operator,
@@ -200,39 +205,29 @@ function generateMathProblems(options: GeneratorOptions) {
     });
   }
 
-  return problems;
+  return generatedProblems;
 }
 
 function writeProblems(problems: Problem[], withAnswer: boolean = false) {
   const problemGroups = chunkArray(problems, itemsPerPage);
 
-  const mathProblemNodes = problemGroups.map(group => {
-    const gridItems = group.map(problem => {
-      const operatorChar = {
-        '/': '÷',
-        '*': '×'
-      }[problem.operator] || problem.operator;
-      
-      // write the individual lines of the problem, with padding as needed
-      let line1 = `${problem.left}`;
-      let line2 = `${operatorChar} ${problem.right}`;
-      const spaceToAdd = Math.max(problem.left.toString().length, problem.right.toString().length) + 2 - line2.length;
-      if (spaceToAdd > 0) {
-        line2 = `${operatorChar}${" ".repeat(spaceToAdd)}${problem.right}`;
-      }
+  const mathProblemNodes = problemGroups.map((group) => {
+    const gridItems = group
+      .map((problem) => {
+        const probStr = writeSingleProblem(problem); // don't get the answer here, it'll be added separately
 
-      const line3 = "-".repeat(Math.max(line1.length, line2.length));
-
-      return `
+        return `
         <div class="grid-item">
           <div class="pre-wrapper">
-            <pre class="problem">${line1}\n${line2}\n${line3}</pre>
-            <pre class="answer ${withAnswer ? '' : 'hidden'}">${problem.answer}</pre>
+            <pre class="problem">${probStr}</pre>
+            <pre class="answer ${withAnswer ? "" : "hidden"}">${problem.answer}</pre>
           </div>
         </div>
-      `
-    }).join("");
+      `;
+      })
+      .join("");
 
+    // TODO: remo
     return `<div class="math-grid">${gridItems}</div>`;
   });
 
@@ -241,11 +236,11 @@ function writeProblems(problems: Problem[], withAnswer: boolean = false) {
 }
 
 function createPageFooter(): string {
- return `
+  return `
     <div class="page-footer page-break">
       Generated with <a href="#">mathsheets</a>
     </div>
-  `
+  `;
 }
 
 function chunkArray<T>(array: T[], size: number): T[][] {
@@ -254,4 +249,95 @@ function chunkArray<T>(array: T[], size: number): T[][] {
     chunks.push(array.slice(i, i + size));
   }
   return chunks;
+}
+
+function writeSingleProblem(problem: Problem, withAnswer: boolean = false) {
+  // write the individual lines of the problem, with padding as needed
+  const operatorChar =
+    {
+      "/": "÷",
+      "*": "×"
+    }[problem.operator] || problem.operator;
+
+  let line1 = `${problem.left}`;
+  let line2 = `${operatorChar} ${problem.right}`;
+  const spaceToAdd =
+    Math.max(problem.left.toString().length, problem.right.toString().length) + 2 - line2.length;
+  if (spaceToAdd > 0) {
+    line2 = `${operatorChar}${" ".repeat(spaceToAdd)}${problem.right}`;
+  }
+
+  const line3 = "-".repeat(Math.max(line1.length, line2.length));
+
+  if (!withAnswer) {
+    return `${line1}\n${line2}\n${line3}`;
+  } else {
+    return `${line1}\n${line2}\n${line3}\n${problem.answer}`;
+  }
+}
+
+function generatePDF(problems: Problem[]) {
+  const doc = new jsPDF();
+
+  console.log(doc.getFontList());
+
+  // TODO: create new fonts
+  // note that chrome's internal PDF viewer doesn't render the correct Courier font on linux...
+  doc.setFont("courier");
+  doc.setFontSize(16);
+
+  // add header
+  if (withHeaderCheckbox.checked) {
+    doc.text("NAME: ______________", 12, 12, { align: "left" });
+    doc.text("DATE: ______________", doc.internal.pageSize.getWidth() - 12, 12, { align: "right" });
+  }
+
+  const columns = ["", "", "", "", ""];
+  let data: string[] = [];
+
+  // prepare table data
+  problems.forEach((problem, index) => {
+    const formattedProblem = writeSingleProblem(problem, withAnswersCheckbox.checked);
+    data.push(formattedProblem);
+  });
+
+  const chunkedData = chunkArray(data, 5);
+
+  doc.setFont("courier");
+  autoTable(doc, {
+    body: chunkedData,
+    columnStyles: {
+      0: { halign: "right", cellPadding: { right: 6 } },
+      1: { halign: "right", cellPadding: { right: 6 } },
+      2: { halign: "right", cellPadding: { right: 6 } },
+      3: { halign: "right", cellPadding: { right: 6 } },
+      4: { halign: "right", cellPadding: { right: 6 } }
+    },
+    styles: {
+      halign: "center",
+      valign: "middle",
+      font: "Courier",
+      fontSize: 18,
+      minCellHeight: 36,
+      minCellWidth: 24,
+      textColor: "black"
+    },
+    theme: "plain",
+    margin: { horizontal: 20, vertical: 20 },
+    didDrawPage: (data) => {
+      // footer
+      let footer = `Created with Math Sheets - %WEBSITE%`;
+      const pageSize = doc.internal.pageSize;
+      const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
+      const pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth();
+      doc.setFontSize(10);
+      doc.setFont("Helvetica");
+      doc.text(footer, 12, pageHeight - 8);
+
+      const pageNum = doc.getNumberOfPages().toString();
+      doc.text(pageNum, pageWidth - 10, pageHeight - 8, { align: "right" });
+    }
+  });
+
+  doc.save(`math-sheet${withAnswersCheckbox.checked ? "_answers" : ""}.pdf`);
 }

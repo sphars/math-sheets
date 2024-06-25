@@ -5,7 +5,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "font": "node scripts/generateFontCSS.js",
+    "pretty:check": "prettier . --check",
+    "pretty:write": "prettier . --write"
   },
   "repository": {
     "type": "git",
@@ -18,12 +21,14 @@
   },
   "homepage": "https://github.com/sphars/math-sheets#readme",
   "dependencies": {
-    "jspdf": "^2.5.1"
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "github:simonbengtsson/jsPDF-AutoTable#v4"
   },
   "devDependencies": {
     "@fontsource-variable/roboto-flex": "^5.0.15",
-    "@fontsource/noto-sans-mono": "^5.0.20",
-    "@fontsource/roboto-mono": "^5.0.18",
+    "@types/node": "^20.14.8",
+    "prettier": "3.3.2",
     "typescript": "^5.5.2",
     "vite": "^5.3.1"
   }
