@@ -15,12 +15,7 @@
       <nav>
         <a href="/" id="logo">
           <div class="icon">
-            <img
-              width="42"
-              height="42"
-              src="/favicons/android-chrome-192x192.png"
-              alt="Math Sheets logo"
-            />
+            <img width="42" height="42" src="/favicons/android-chrome-192x192.png" alt="Math Sheets logo" />
           </div>
           <div class="logo-text">Math Sheets</div>
         </a>
@@ -29,13 +24,10 @@
 
     <main>
       <div class="information">
+        <p>A math problem generator. Use the form options below to specify what kind of problems to generate.</p>
         <p>
-          A math problem generator. Use the form options below to specify what kind of problems to
-          generate.
-        </p>
-        <p>
-          This site is open-source and is licensed under the MIT license. Have any comments or bugs
-          to report? File an issue on
+          This site is open-source and is licensed under the MIT license. Have any comments or bugs to report? File an
+          issue on
           <a href="https://github.com/sphars/math-sheets/issues" target="_blank">GitHub</a>.
         </p>
       </div>
@@ -46,28 +38,41 @@
           <form id="input-form">
             <fieldset>
               <legend>Operator</legend>
-              <div>
-                <input required type="radio" id="operator-add" name="operator" value="+" checked />
-                <label for="operator-add">Addition (&plus;)</label>
+              <div class="radio-group">
+                <div class="form-field">
+                  <div>
+                    <input required type="radio" id="operator-add" name="operator" value="+" checked />
+                    <label for="operator-add">Addition (&plus;)</label>
+                  </div>
+                </div>
 
-                <input required type="radio" id="operator-subtract" name="operator" value="-" />
-                <label for="operator-subtract">Subtraction (&minus;)</label>
+                <div class="form-field">
+                  <div>
+                    <input required type="radio" id="operator-subtract" name="operator" value="-" />
+                    <label for="operator-subtract">Subtraction (&minus;)</label>
+                  </div>
+                </div>
 
-                <input required type="radio" id="operator-multiply" name="operator" value="*" />
-                <label for="operator-multiply">Multiplication (&times;)</label>
+                <div class="form-field">
+                  <div>
+                    <input required type="radio" id="operator-multiply" name="operator" value="*" />
+                    <label for="operator-multiply">Multiplication (&times;)</label>
+                  </div>
+                </div>
 
-                <input required type="radio" id="operator-divide" name="operator" value="/" />
-                <label for="operator-divide">Division (&divide;)</label>
+                <div class="form-field">
+                  <div>
+                    <input required type="radio" id="operator-divide" name="operator" value="/" />
+                    <label for="operator-divide">Division (&divide;)</label>
+                  </div>
+                </div>
 
-                <input
-                  required
-                  type="radio"
-                  id="operator-mix"
-                  name="operator"
-                  value="mix"
-                  disabled
-                />
-                <label for="operator-mix">Mix</label>
+                <div class="form-field">
+                  <div>
+                    <input required type="radio" id="operator-mix" name="operator" value="mix" />
+                    <label for="operator-mix">Mix</label>
+                  </div>
+                </div>
               </div>
             </fieldset>
 
@@ -75,30 +80,12 @@
               <legend>Operand Values</legend>
               <div class="form-field">
                 <label for="min-input">Minimum</label>
-                <input
-                  required
-                  type="number"
-                  id="min-input"
-                  name="min-input"
-                  min="0"
-                  max="999"
-                  step="1"
-                  value="0"
-                />
+                <input required type="number" id="min-input" name="min-input" min="0" max="999" step="1" value="0" />
               </div>
 
               <div class="form-field">
                 <label for="max-input">Maximum</label>
-                <input
-                  required
-                  type="number"
-                  id="max-input"
-                  name="max-input"
-                  min="0"
-                  max="1000"
-                  step="1"
-                  value="100"
-                />
+                <input required type="number" id="max-input" name="max-input" min="0" max="1000" step="1" value="100" />
               </div>
             </fieldset>
 
@@ -117,7 +104,6 @@
                     step="1"
                     value="35"
                   />
-                  <span id="pages"></span>
                 </div>
               </div>
 
@@ -162,12 +148,7 @@
             <div>
               <div class="form-field">
                 <label for="font-select">Font</label>
-                <select
-                  type="checkbox"
-                  id="font-select"
-                  name="font-select"
-                  form="input-form"
-                ></select>
+                <select type="checkbox" id="font-select" name="font-select" form="input-form"></select>
               </div>
 
               <div class="form-field">
@@ -185,7 +166,10 @@
               </div>
             </div>
 
-            <button type="button" id="pdf-button">Generate PDF</button>
+            <div>
+              <button type="button" id="pdf-button">Generate PDF</button>
+              <div id="pages"></div>
+            </div>
             <!-- <button type="button" id="print-button">Print</button> -->
           </div>
 

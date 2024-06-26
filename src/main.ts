@@ -10,6 +10,7 @@ import { jsPDF } from "jspdf";
 import { autoTable } from "jspdf-autotable";
 
 // --- Script vars
+const operators = ["+", "-", "*", "/"];
 const fonts: Font[] = fontsData.fonts.sort((a, b) => a.name.localeCompare(b.name));
 const itemsPerPage = 35;
 let generatedProblems: Problem[] = [];
@@ -187,20 +188,27 @@ function getOperands(options: GeneratorOptions) {
 
 function generateMathProblems(options: GeneratorOptions) {
   for (let i = 0; i < options.numProblems; i++) {
-    let operands = getOperands(options);
-    let answer = getAnswer(operands[0], operands[1], options.operator);
+    // copy the form options
+    const optionsCopy = JSON.parse(JSON.stringify(options)) as GeneratorOptions;
+
+    // if operator = mix, need to randomize which operator to use
+    optionsCopy.operator =
+      options.operator === "mix" ? ["+", "-", "*", "/"][generateRandInt(0, 3)] : options.operator;
+
+    let operands = getOperands(optionsCopy);
+    let answer = getAnswer(operands[0], operands[1], optionsCopy.operator);
 
     if (options.intsOnly) {
       do {
         operands = getOperands(options);
-        answer = getAnswer(operands[0], operands[1], options.operator);
+        answer = getAnswer(operands[0], operands[1], optionsCopy.operator);
       } while (!Number.isInteger(answer));
     }
 
     generatedProblems.push({
       left: operands[0],
       right: operands[1],
-      operator: options.operator,
+      operator: optionsCopy.operator,
       answer: answer
     });
   }
