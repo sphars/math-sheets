@@ -42,7 +42,7 @@ See [ISSUES](https://github.com/sphars/math-sheets/issues) for more details.
 
 ## Development
 
-This site is built with Typescript and Vite. To run locally, clone the repo, then
+This site is built with Typescript and Vite. Only requirement is Node v20+. To run locally, clone the repo, then
 
 ```
 cd math-sheets

@@ -17,16 +17,16 @@ async function createFontCSS(fonts, filePath = "./src/fonts.css") {
         if (!font.url) return;
 
         return `@font-face {
-    font-family: '${font.name}';
-    src: url('${font.url}') format('${font.format}');
-    font-weight: ${font.weight ? font.weight : "normal"};
-    font-style: ${font.style ? font.style : "normal"};
+  font-family: "${font.name}";
+  src: url("${font.url}") format("${font.format}");
+  font-weight: ${font.weight ? font.weight : "normal"};
+  font-style: ${font.style ? font.style : "normal"};
 }`;
       })
       .join("\n");
 
     // write to file, overwrite existing
-    await fs.writeFile(filePath, cssContent, "utf-8");
+    await fs.writeFile(filePath, cssContent + "\n", "utf-8");
     console.log(`File ${filePath} updated successfully`);
   } catch (error) {
     console.error("An error occurred writing font file: ", error);
