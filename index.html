@@ -25,11 +25,6 @@
     <main>
       <div class="information">
         <p>A math problem generator. Use the form options below to specify what kind of problems to generate.</p>
-        <p>
-          This site is open-source and is licensed under the MIT license. Have any comments or bugs to report? File an
-          issue on
-          <a href="https://github.com/sphars/math-sheets/issues" target="_blank">GitHub</a>.
-        </p>
       </div>
 
       <div class="content-wrapper">
@@ -145,32 +140,24 @@
         <div class="preview-wrapper">
           <h2>Preview</h2>
           <div id="actions">
-            <div>
-              <div class="form-field">
-                <label for="font-select">Font</label>
-                <select type="checkbox" id="font-select" name="font-select" form="input-form"></select>
-              </div>
+            <div class="form-field">
+              <label for="font-select">Font</label>
+              <select type="checkbox" id="font-select" name="font-select" form="input-form"></select>
+            </div>
 
-              <div class="form-field">
-                <div>
-                  <input type="checkbox" id="with-header" name="with-header" />
-                  <label for="with-header">With header</label>
-                </div>
-              </div>
-
-              <div class="form-field">
-                <div>
-                  <input type="checkbox" id="with-answers" name="show-answers" />
-                  <label for="with-answers">With answers</label>
-                </div>
+            <div class="form-field">
+              <div>
+                <input type="checkbox" id="with-header" name="with-header" />
+                <label for="with-header">With header</label>
               </div>
             </div>
 
-            <div>
-              <button type="button" id="pdf-button">Generate PDF</button>
-              <div id="pages"></div>
+            <div class="form-field">
+              <div>
+                <input type="checkbox" id="with-answers" name="show-answers" />
+                <label for="with-answers">With answers</label>
+              </div>
             </div>
-            <!-- <button type="button" id="print-button">Print</button> -->
           </div>
 
           <div id="page-wrapper">
@@ -180,11 +167,25 @@
                 <div>DATE: __________</div>
               </div>
               <div id="page-content"></div>
+              <div id="page-footer">Created with <a href="#">Math Sheets</a></div>
             </div>
+          </div>
+
+          <div class="generate-pdf">
+            <button type="button" id="pdf-button" class="disabled">Generate PDF</button>
+            <div id="pages"></div>
           </div>
         </div>
       </div>
     </main>
+
+    <footer>
+      <p>This site is open-source and is licensed under the MIT license.</p>
+      <p>
+        Have any comments or bugs to report? File an issue on
+        <a href="https://github.com/sphars/math-sheets/issues" target="_blank">GitHub</a>.
+      </p>
+    </footer>
 
     <script src="src/main.ts" type="module"></script>
   </body>

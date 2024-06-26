@@ -16,18 +16,22 @@ const itemsPerPage = 35;
 let generatedProblems: Problem[] = [];
 
 // --- Elements
-const page = document.getElementById("page");
-const pageContent = document.getElementById("page-content");
+const page = document.getElementById("page") as HTMLDivElement;
+const pageContent = document.getElementById("page-content") as HTMLDivElement;
 const inputForm = document.getElementById("input-form") as HTMLFormElement;
-const withAnswersCheckbox = document.getElementById("with-answers") as HTMLInputElement;
-const formSubmitButton = document.getElementById("form-submit") as HTMLButtonElement;
-const printButton = document.getElementById("print-button") as HTMLButtonElement;
-const pdfButton = document.getElementById("pdf-button") as HTMLButtonElement;
-const numProblemsInput = document.getElementById("num-problems") as HTMLInputElement;
 const pagesNote = document.getElementById("pages");
+const logoArea = document.querySelector<HTMLAnchorElement>("#logo")!;
+
+// --- Inputs
+const numProblemsInput = document.getElementById("num-problems") as HTMLInputElement;
 const fontSelect = document.getElementById("font-select") as HTMLSelectElement;
 const withHeaderCheckbox = document.getElementById("with-header") as HTMLInputElement;
-const logoArea = document.querySelector<HTMLAnchorElement>("#logo")!;
+const withAnswersCheckbox = document.getElementById("with-answers") as HTMLInputElement;
+
+// --- Buttons
+const formSubmitButton = document.getElementById("form-submit") as HTMLButtonElement;
+// const printButton = document.getElementById("print-button") as HTMLButtonElement;
+const pdfButton = document.getElementById("pdf-button") as HTMLButtonElement;
 
 // --- Event listeners
 window.addEventListener("DOMContentLoaded", (event) => {
@@ -47,11 +51,11 @@ window.addEventListener("DOMContentLoaded", (event) => {
   updatePagesNote();
 });
 
-numProblemsInput?.addEventListener("change", (event) => {
+numProblemsInput.addEventListener("change", (event) => {
   updatePagesNote();
 });
 
-fontSelect?.addEventListener("change", (event) => {
+fontSelect.addEventListener("change", (event) => {
   setCSSVariable(
     document.documentElement,
     "--font-mono",
@@ -59,7 +63,7 @@ fontSelect?.addEventListener("change", (event) => {
   );
 });
 
-withHeaderCheckbox?.addEventListener("click", (event: any) => {
+withHeaderCheckbox.addEventListener("click", (event: any) => {
   const pageHeader = document.getElementById("page-header");
 
   if (event.target?.checked) {
@@ -103,18 +107,20 @@ inputForm.addEventListener("submit", (e) => {
     fonts.find((font) => font.name === fontSelect.value)?.family!
   );
 
-  page?.classList.remove("d-none");
+  pdfButton.classList.remove("disabled");
+  page!.classList.remove("d-none");
+  page!.parentElement!.style.border = "1px solid #888";
 });
 
-printButton?.addEventListener("click", () => {
-  if (!pageContent?.hasChildNodes()) return;
-  let currTitle = document.title;
-  document.title = withAnswersCheckbox.checked ? "math-sheets_answers" : "math-sheets";
-  window.print();
-  document.title = currTitle;
-});
+// printButton.addEventListener("click", () => {
+//   if (!pageContent?.hasChildNodes()) return;
+//   let currTitle = document.title;
+//   document.title = withAnswersCheckbox.checked ? "math-sheets_answers" : "math-sheets";
+//   window.print();
+//   document.title = currTitle;
+// });
 
-pdfButton?.addEventListener("click", () => {
+pdfButton.addEventListener("click", () => {
   if (generatedProblems.length === 0) return;
   generatePDF(generatedProblems);
 });
@@ -134,7 +140,9 @@ function getNumPages(numProblems: number) {
 function updatePagesNote() {
   const pages = getNumPages(+numProblemsInput.value);
   if (pagesNote)
-    pagesNote.textContent = `${pages} page${pages === 1 ? "" : "s"} (${itemsPerPage} problems per page)`;
+    pagesNote.textContent =
+      `${pages} page${pages === 1 ? "" : "s"}, ` +
+      `${+numProblemsInput.value < itemsPerPage ? +numProblemsInput.value : itemsPerPage} problems per page`;
 }
 
 function generateRandInt(min: number, max: number) {
@@ -192,8 +200,7 @@ function generateMathProblems(options: GeneratorOptions) {
     const optionsCopy = JSON.parse(JSON.stringify(options)) as GeneratorOptions;
 
     // if operator = mix, need to randomize which operator to use
-    optionsCopy.operator =
-      options.operator === "mix" ? ["+", "-", "*", "/"][generateRandInt(0, 3)] : options.operator;
+    optionsCopy.operator = options.operator === "mix" ? operators[generateRandInt(0, 3)] : options.operator;
 
     let operands = getOperands(optionsCopy);
     let answer = getAnswer(operands[0], operands[1], optionsCopy.operator);
@@ -217,7 +224,7 @@ function generateMathProblems(options: GeneratorOptions) {
 }
 
 function writeProblems(problems: Problem[], withAnswer: boolean = false) {
-  const problemGroups = chunkArray(problems, itemsPerPage);
+  const problemGroups = chunkArray(problems, itemsPerPage); // chunk into groups of 35 (one page)
 
   const mathProblemNodes = problemGroups.map((group) => {
     const gridItems = group
@@ -239,16 +246,7 @@ function writeProblems(problems: Problem[], withAnswer: boolean = false) {
     return `<div class="math-grid">${gridItems}</div>`;
   });
 
-  const footer = createPageFooter();
-  if (pageContent) pageContent.innerHTML = mathProblemNodes.join("") + footer;
-}
-
-function createPageFooter(): string {
-  return `
-    <div class="page-footer page-break">
-      Generated with <a href="#">mathsheets</a>
-    </div>
-  `;
+  if (pageContent) pageContent.innerHTML = mathProblemNodes.join("");
 }
 
 function chunkArray<T>(array: T[], size: number): T[][] {
@@ -269,8 +267,7 @@ function writeSingleProblem(problem: Problem, withAnswer: boolean = false) {
 
   let line1 = `${problem.left}`;
   let line2 = `${operatorChar} ${problem.right}`;
-  const spaceToAdd =
-    Math.max(problem.left.toString().length, problem.right.toString().length) + 2 - line2.length;
+  const spaceToAdd = Math.max(problem.left.toString().length, problem.right.toString().length) + 2 - line2.length;
   if (spaceToAdd > 0) {
     line2 = `${operatorChar}${" ".repeat(spaceToAdd)}${problem.right}`;
   }
@@ -287,11 +284,10 @@ function writeSingleProblem(problem: Problem, withAnswer: boolean = false) {
 function generatePDF(problems: Problem[]) {
   const doc = new jsPDF();
 
-  console.log(doc.getFontList());
-
   // TODO: create new fonts
-  // note that chrome's internal PDF viewer doesn't render the correct Courier font on linux...
-  doc.setFont("courier");
+  // note that chrome's internal PDF viewer doesn't render the correct Courier font...
+  // console.log(doc.getFontList());
+  doc.setFont("Courier");
   doc.setFontSize(16);
 
   // add header
@@ -334,13 +330,13 @@ function generatePDF(problems: Problem[]) {
     margin: { horizontal: 20, vertical: 20 },
     didDrawPage: (data) => {
       // footer
-      let footer = `Created with Math Sheets - %WEBSITE%`;
+      let footer = `Created with Math Sheets %WEBSITE_URL%`;
       const pageSize = doc.internal.pageSize;
       const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
       const pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth();
       doc.setFontSize(10);
       doc.setFont("Helvetica");
-      doc.text(footer, 12, pageHeight - 8);
+      doc.textWithLink(footer, 12, pageHeight - 8, { url: "https://github.com/sphars/math-sheets" });
 
       const pageNum = doc.getNumberOfPages().toString();
       doc.text(pageNum, pageWidth - 10, pageHeight - 8, { align: "right" });

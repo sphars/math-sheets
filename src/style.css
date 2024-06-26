@@ -49,14 +49,19 @@ nav {
   justify-content: space-between;
 }
 
+footer {
+  padding-top: 3rem;
+  text-align: center;
+}
+
 /* Logo */
 #logo {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   column-gap: 16px;
-  background-color: #24273a;
   padding: 16px;
+  text-decoration: none;
 }
 
 #logo .icon {
@@ -82,30 +87,25 @@ nav {
   margin: 2rem auto;
 }
 
-.form-wrapper {
-}
-
-.preview-wrapper {
-}
-
 #actions {
   display: flex;
-  flex-flow: column wrap;
-  justify-content: space-between;
-  align-items: stretch;
-  row-gap: 8px;
-  width: 100%;
-}
-
-#actions > div:first-child {
-  display: flex;
   flex-direction: row;
-  align-items: flex-end;
+  align-items: center;
   column-gap: 8px;
+  width: 100%;
+  margin-bottom: 0.5rem;
 }
 
-#actions > div:nth-child(2) {
-  text-align: center;
+#actions .form-field {
+  margin-bottom: 0;
+}
+
+#actions .form-field > * {
+  display: inline-block;
+}
+
+#actions .form-field > .label {
+  margin-bottom: 0;
 }
 
 /* Form styles */
@@ -118,6 +118,7 @@ nav {
 
 #input-form fieldset {
   width: 100%;
+  border: 1px solid #888;
 }
 
 #input-form .radio-group {
@@ -161,17 +162,15 @@ form input[type="number"] {
 
 /* The generated "page" */
 #page-wrapper {
-  max-height: 12in;
+  max-height: 480px;
   width: 100%;
   overflow: auto;
+  margin-bottom: 0.5rem;
 }
 
 #page {
-  /* width: 8.5in;
-    height: 11in; */
   margin: 8px auto;
   padding: 1rem;
-  border: 1px solid #888;
 }
 
 #page-header {
@@ -186,10 +185,22 @@ form input[type="number"] {
 }
 
 .math-grid {
+  /* grid calculations from https://css-tricks.com/an-auto-filling-css-grid-with-max-columns/ */
+  --grid-layout-gap: 16px;
+  --grid-column-count: 5;
+  --grid-item--min-width: 120px;
+
+  --gap-count: calc(var(--grid-column-count) - 1);
+  --total-gap-width: calc(var(--gap-count) * var(--grid-layout-gap));
+  --grid-item--max-width: calc((100% - var(--total-gap-width)) / var(--grid-column-count));
+
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  row-gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(max(var(--grid-item--min-width), var(--grid-item--max-width)), 1fr));
+  gap: var(--grid-layout-gap);
+
   margin: 1rem 0;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 1rem;
 }
 
 .math-grid > div {
@@ -203,8 +214,8 @@ form input[type="number"] {
   flex-direction: column;
 }
 
-.page-footer {
-  text-align: center;
+#page-footer {
+  text-align: left;
   font-size: 12px;
   width: 100%;
 }
@@ -213,7 +224,7 @@ pre {
   display: inline-block;
   margin: 0;
 
-  font-size: 20px;
+  font-size: 16px;
   letter-spacing: 0.125em;
   font-variant-numeric: tabular-nums;
   text-align: right;
@@ -222,8 +233,8 @@ pre {
 }
 
 button {
-  background-color: #24273a;
-  color: #cad3f5;
+  background-color: #b7bdf8;
+  color: #181926;
   margin: 8px 0;
   padding: 8px 16px;
   border: none;
@@ -231,6 +242,21 @@ button {
   font-family: inherit;
   text-align: center;
   font-size: 1.125rem;
+  cursor: pointer;
+}
+
+button.disabled {
+  background-color: #6e738d;
+  color: #b8c0e0;
+  cursor: not-allowed;
+}
+
+input:disabled {
+  cursor: not-allowed;
+}
+
+.generate-pdf {
+  text-align: center;
 }
 
 .hidden {
@@ -255,7 +281,7 @@ button {
   }
 }
 
-@media print {
+/* @media print {
   header,
   h1,
   h2,
@@ -294,4 +320,4 @@ button {
   @page :first {
     margin-top: 16px;
   }
-}
+} */
