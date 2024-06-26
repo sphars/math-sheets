@@ -1,13 +1,12 @@
-name: "PR Tasks Completed Check"
+name: Task List Checker
 on:
   pull_request:
     types: [opened, edited, synchronize, reopened]
-
 jobs:
-  task-check:
+  task-list-checker:
     runs-on: ubuntu-latest
     steps:
-      - name: Check for incomplete task items
-        uses: kentaro-m/task-completed-checker-action@v0.1.2
+      - name: Check for incomplete task list items
+        uses: Shopify/task-list-checker@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
