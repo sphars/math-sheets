@@ -1,14 +1,14 @@
 # Math Sheets
 
-Generate simple math worksheets in the browser for printing or whatever. 
+Generate simple math worksheets in the browser for printing or whatever.
 
-nspired by the worksheets my dad printed off for my siblings and I during the summer breaks.  I'm recreating this purely by memory; all I remember is that it was a grid of math problems, printed on a dot matrix printer. Not sure what he created his sheets in (likely QBasic or VisualBasic as this was late 1990s), so my attempt is to recreate this as close as possible, using modern web technologies. 
+Inspired by the worksheets my dad printed off for my siblings and I during the summer breaks. I'm recreating this purely by memory; all I remember is that it was a grid of math problems, printed on a dot matrix printer. Not sure what he created his sheets in (likely QBasic or VisualBasic as this was late 1990s), so my attempt is to recreate this as close as possible, using modern web technologies.
 
 Built with HTML, CSS and Typescript and Vite in (more than) a few hours. I'm also using this as an exercise to learn newer web technologies (like TS and Vite).
 
 ## Features
 
-For generating the problems, there's configuration options: 
+For generating the problems, there's several configuration options:
 
 - Choose from the 4 operators to generate problems for (using a mix is WIP)
 - Set the min/max operand values (0-1000 inclusive, may adjust)
@@ -55,6 +55,7 @@ The production build is just a static site. To build, run
 ```
 npm run build
 ```
+
 and the output `./dist` directory can be deployed where ever you'd like. See the `.github/workflows/deploy.yml` file for an example GitHub pages deployment.
 
 ## Credits

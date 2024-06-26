@@ -19,11 +19,14 @@ jobs:
         with:
           node-version-file: ".nvmrc"
 
-      - name: Install & Build
-        run: |
-          npm ci
-          npm run fonts
-          npm run build
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate font CSS
+        run: npm run fonts
+
+      - name: Build
+        run: npm run build
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
