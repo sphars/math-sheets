@@ -1,9 +1,11 @@
 {
   "name": "math-sheets",
   "version": "0.1.0",
+  "private": true,
   "description": "A simple website for printing math worksheets",
   "scripts": {
     "prepare": "husky",
+    "postinstall": "npm run fonts",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
@@ -28,7 +30,7 @@
   },
   "devDependencies": {
     "@fontsource-variable/roboto-flex": "^5.0.15",
-    "@types/node": "^20.14.8",
+    "@types/node": "^20.14.9",
     "husky": "^9.0.11",
     "prettier": "3.3.2",
     "typescript": "^5.5.2",

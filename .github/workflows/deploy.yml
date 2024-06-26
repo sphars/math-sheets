@@ -22,9 +22,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Generate font CSS
-        run: npm run fonts
-
       - name: Build
         run: npm run build
 

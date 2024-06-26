@@ -23,10 +23,10 @@ async function createFontCSS(fonts, filePath = "./src/fonts.css") {
   font-style: ${font.style ? font.style : "normal"};
 }`;
       })
-      .join("\n");
+      .join("\n\n");
 
     // write to file, overwrite existing
-    await fs.writeFile(filePath, cssContent + "\n", "utf-8");
+    await fs.writeFile(filePath, cssContent.trim() + "\n", "utf-8");
     console.log(`File ${filePath} updated successfully`);
   } catch (error) {
     console.error("An error occurred writing font file: ", error);

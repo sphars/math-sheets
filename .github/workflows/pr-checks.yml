@@ -23,8 +23,5 @@ jobs:
       - name: Check Prettifier
         run: npm run pretty:check
 
-      - name: Generate font CSS
-        run: npm run fonts
-
       - name: Build
         run: npm run build
