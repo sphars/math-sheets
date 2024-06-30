@@ -292,8 +292,8 @@ function generatePDF(problems: Problem[]) {
 
   // add header
   if (withHeaderCheckbox.checked) {
-    doc.text("NAME: ______________", 12, 12, { align: "left" });
-    doc.text("DATE: ______________", doc.internal.pageSize.getWidth() - 12, 12, { align: "right" });
+    doc.text("NAME: ______________", 8, 14, { align: "left" });
+    doc.text("DATE: ______________", doc.internal.pageSize.getWidth() - 8, 14, { align: "right" });
   }
 
   const columns = ["", "", "", "", ""];
@@ -311,35 +311,35 @@ function generatePDF(problems: Problem[]) {
   autoTable(doc, {
     body: chunkedData,
     columnStyles: {
-      0: { halign: "right", cellPadding: { right: 6 } },
-      1: { halign: "right", cellPadding: { right: 6 } },
-      2: { halign: "right", cellPadding: { right: 6 } },
-      3: { halign: "right", cellPadding: { right: 6 } },
-      4: { halign: "right", cellPadding: { right: 6 } }
+      0: { halign: "right", cellPadding: { right: 10 } },
+      1: { halign: "right", cellPadding: { right: 10 } },
+      2: { halign: "right", cellPadding: { right: 10 } },
+      3: { halign: "right", cellPadding: { right: 10 } },
+      4: { halign: "right", cellPadding: { right: 10 } }
     },
     styles: {
       halign: "center",
       valign: "middle",
       font: "Courier",
-      fontSize: 18,
+      fontSize: 16,
       minCellHeight: 36,
-      minCellWidth: 24,
+      minCellWidth: 26,
       textColor: "black"
     },
     theme: "plain",
-    margin: { horizontal: 20, vertical: 20 },
+    margin: { horizontal: 16, vertical: 18 },
     didDrawPage: (data) => {
       // footer
       let footer = `Created with Math Sheets %WEBSITE_URL%`;
       const pageSize = doc.internal.pageSize;
       const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
       const pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth();
-      doc.setFontSize(10);
+      doc.setFontSize(9);
       doc.setFont("Helvetica");
-      doc.textWithLink(footer, 12, pageHeight - 8, { url: "https://github.com/sphars/math-sheets" });
+      doc.textWithLink(footer, 10, pageHeight - 8, { url: "https://github.com/sphars/math-sheets" });
 
       const pageNum = doc.getNumberOfPages().toString();
-      doc.text(pageNum, pageWidth - 10, pageHeight - 8, { align: "right" });
+      doc.text(pageNum, pageWidth - 8, pageHeight - 8, { align: "right" });
     }
   });
 
