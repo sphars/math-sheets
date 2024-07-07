@@ -14,12 +14,12 @@ For generating the problems, there's several configuration options:
 - Set the min/max operand values (0-1000 inclusive, may adjust)
   - For division problems, the second operand is regenerated if it's 0 to avoid divide by zero problems
 - Set the number of problems to generate
-  - Currently I'm creating the PDF so that it fits 35 problems (5x7) per page. May adjust this
-- Option to set the operand order (highest or lowest first)
-- Option to not have negative numbers, which overrides operand order to highest first (helpful with subtraction problems)
-- Option to make answers be integers only (for division problems)
+  - Currently I'm creating the PDF so that it fits 35 problems (5x7) per page, which may change
+- Set the operand order (highest or lowest first)
+- Don't have negative answers, which overrides operand order to highest first (helpful with subtraction problems)
+- Make answers be integers only (for division problems)
   - If unselected, then answers are rounded to 3 decimal places
-- (WIP) Option to change the division notation to long division
+- (WIP) Change the division notation to long division
 
 For generating the PDFs, there's a couple options to change:
 
@@ -30,13 +30,14 @@ For generating the PDFs, there's a couple options to change:
 
 ## Status
 
-It's at the MVP stage right now, with a couple features still in-progress:
+It's at the MVP stage right now, with all basic functionality available.
+
+There are a couple features still in-progress:
 
 - Use alternative notations, such as the long-division notation
-- Creating problems with randomly chosen operators
 - Better styling
 - Saving config via URL parameters
-- Using custom fonts in the PDF (currently only renders with Courier)
+- Using custom fonts in the PDF (only Courier is available in the PDF for now)
 
 See [ISSUES](https://github.com/sphars/math-sheets/issues) for more details.
 
