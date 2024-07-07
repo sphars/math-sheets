@@ -38,7 +38,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
   // setup the font select
   fonts.forEach((font) => {
     const opt = document.createElement("option") as HTMLOptionElement;
-    if (font.name === "Default") opt.selected = true;
+    if (font.name === "Courier") opt.selected = true;
     (opt.value = font.name), (opt.text = font.name);
     fontSelect.add(opt);
   });
@@ -63,15 +63,7 @@ fontSelect.addEventListener("change", (event) => {
   );
 });
 
-withHeaderCheckbox.addEventListener("click", (event: any) => {
-  const pageHeader = document.getElementById("page-header");
-
-  if (event.target?.checked) {
-    pageHeader?.classList.remove("hidden");
-  } else {
-    pageHeader?.classList.add("hidden");
-  }
-});
+withHeaderCheckbox.addEventListener("click", showPageHeader);
 
 withAnswersCheckbox.addEventListener("click", (event: any) => {
   const answerElements = pageContent?.querySelectorAll("pre.answer");
@@ -97,6 +89,8 @@ inputForm.addEventListener("submit", (e) => {
     intsOnly: inputData.get("ints-only") as unknown as boolean,
     fontSelect: inputData.get("font-select") as string
   };
+
+  showPageHeader();
 
   generatedProblems.length = 0;
   generatedProblems = generateMathProblems(options);
@@ -135,6 +129,12 @@ function setCSSVariable(element: HTMLElement, variable: string, value: string) {
 
 function getNumPages(numProblems: number) {
   return Math.ceil((numProblems - itemsPerPage) / itemsPerPage) + 1;
+}
+
+function showPageHeader() {
+  const pageHeader = document.getElementById("page-header");
+
+  withHeaderCheckbox.checked ? pageHeader?.classList.remove("hidden") : pageHeader?.classList.add("hidden");
 }
 
 function updatePagesNote() {
@@ -284,17 +284,18 @@ function writeSingleProblem(problem: Problem, withAnswer: boolean = false) {
 function generatePDF(problems: Problem[]) {
   const doc = new jsPDF();
 
-  // TODO: create new fonts
-  // note that chrome's internal PDF viewer doesn't render the correct Courier font...
-  // console.log(doc.getFontList());
-  doc.setFont("Courier");
-  doc.setFontSize(16);
-
   // add header
   if (withHeaderCheckbox.checked) {
-    doc.text("NAME: ______________", 8, 14, { align: "left" });
-    doc.text("DATE: ______________", doc.internal.pageSize.getWidth() - 8, 14, { align: "right" });
+    doc.setFont("Helvetica");
+    doc.setFontSize(14);
+    doc.text("Name: __________________", 8, 14, { align: "left" });
+    doc.text("Date: ______________", doc.internal.pageSize.getWidth() - 8, 14, { align: "right" });
   }
+
+  // TODO: create new fonts
+  // note that chrome's internal PDF viewer doesn't render the correct Courier font...
+  doc.setFont("Courier");
+  doc.setFontSize(16);
 
   const columns = ["", "", "", "", ""];
   let data: string[] = [];
@@ -327,7 +328,7 @@ function generatePDF(problems: Problem[]) {
       textColor: "black"
     },
     theme: "plain",
-    margin: { horizontal: 16, vertical: 18 },
+    margin: { horizontal: 16, vertical: 22 },
     didDrawPage: (data) => {
       // footer
       let footer = `Created with Math Sheets %WEBSITE_URL%`;

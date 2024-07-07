@@ -1,10 +1,6 @@
 {
   "fonts": [
     {
-      "name": "Default",
-      "family": "'Nimbus Mono PS', 'Courier New', Consolas, monospace"
-    },
-    {
       "name": "Courier",
       "family": "Courier, monospace",
       "url": "/fonts/Courier.ttf",
