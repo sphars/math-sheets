@@ -331,13 +331,13 @@ function generatePDF(problems: Problem[]) {
     margin: { horizontal: 16, vertical: 22 },
     didDrawPage: (data) => {
       // footer
-      let footer = `Created with Math Sheets %WEBSITE_URL%`;
+      let footer = `Created with Math Sheets - mathsheets.net`;
       const pageSize = doc.internal.pageSize;
       const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
       const pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth();
       doc.setFontSize(9);
       doc.setFont("Helvetica");
-      doc.textWithLink(footer, 10, pageHeight - 8, { url: "https://github.com/sphars/math-sheets" });
+      doc.textWithLink(footer, 10, pageHeight - 8, { url: "https://www.mathsheets.net" });
 
       const pageNum = doc.getNumberOfPages().toString();
       doc.text(pageNum, pageWidth - 8, pageHeight - 8, { align: "right" });
