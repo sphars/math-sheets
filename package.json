@@ -1,0 +1,39 @@
+{
+  "name": "math-sheets",
+  "version": "0.2.0",
+  "private": true,
+  "description": "A simple website for printing math worksheets",
+  "scripts": {
+    "prepare": "husky",
+    "postinstall": "npm run fonts",
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "fonts": "node scripts/generateFontCSS.js",
+    "pretty:check": "prettier . --check",
+    "pretty:fix": "prettier . --write"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sphars/math-sheets.git"
+  },
+  "author": "Spencer Harston",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sphars/math-sheets/issues"
+  },
+  "homepage": "https://github.com/sphars/math-sheets#readme",
+  "dependencies": {
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "github:simonbengtsson/jsPDF-AutoTable#v4"
+  },
+  "devDependencies": {
+    "@fontsource-variable/roboto-flex": "^5.0.15",
+    "@types/node": "^20.14.9",
+    "husky": "^9.0.11",
+    "prettier": "3.3.2",
+    "typescript": "^5.5.2",
+    "vite": "^5.3.1"
+  }
+}
