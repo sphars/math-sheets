@@ -5,6 +5,7 @@ export interface Font {
   format?: string;
   weight?: string | number;
   style?: string;
+  base64?: string;
 }
 
 export interface Problem {
