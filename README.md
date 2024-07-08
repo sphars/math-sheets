@@ -12,6 +12,7 @@ For generating the problems, there's several configuration options:
 
 - Choose from the 4 operators to generate problems for (using a mix is WIP)
 - Set the min/max operand values (0-1000 inclusive, may adjust)
+  - The two operand min/max values can be set independently
   - For division problems, the second operand is regenerated if it's 0 to avoid divide by zero problems
 - Set the number of problems to generate
   - Currently I'm creating the PDF so that it fits 35 problems (5x7) per page, which may change

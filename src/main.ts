@@ -38,8 +38,10 @@ window.addEventListener("DOMContentLoaded", (event) => {
   // setup the font select
   fonts.forEach((font) => {
     const opt = document.createElement("option") as HTMLOptionElement;
-    if (font.name === "Courier") opt.selected = true;
-    (opt.value = font.name), (opt.text = font.name);
+    if (font.name !== "Courier") return; // temporarily restrict font selection
+    opt.selected = true;
+    opt.value = font.name;
+    opt.text = font.name;
     fontSelect.add(opt);
   });
 
@@ -81,8 +83,16 @@ inputForm.addEventListener("submit", (e) => {
 
   const options: GeneratorOptions = {
     operator: inputData.get("operator") as string,
-    min: inputData.get("min-input") as unknown as number,
-    max: inputData.get("max-input") as unknown as number,
+    operands: {
+      left: {
+        min: inputData.get("min-left") as unknown as number,
+        max: inputData.get("max-left") as unknown as number
+      },
+      right: {
+        min: inputData.get("min-right") as unknown as number,
+        max: inputData.get("max-right") as unknown as number
+      }
+    },
     numProblems: inputData.get("num-problems") as unknown as number,
     descOrder: inputData.get("desc-order") as unknown as boolean,
     noNegatives: inputData.get("no-negatives") as unknown as boolean,
@@ -104,6 +114,14 @@ inputForm.addEventListener("submit", (e) => {
   pdfButton.classList.remove("disabled");
   page!.classList.remove("d-none");
   page!.parentElement!.style.border = "1px solid #888";
+});
+
+inputForm.addEventListener("reset", () => {
+  // clear out the generated problems
+  generatedProblems.length = 0;
+  page!.classList.add("d-none");
+  page!.parentElement!.style.border = "none";
+  pdfButton.classList.add("disabled");
 });
 
 // printButton.addEventListener("click", () => {
@@ -176,8 +194,8 @@ function getAnswer(left: number, right: number, operator: string) {
 }
 
 function getOperands(options: GeneratorOptions) {
-  const leftOperand = generateRandInt(options.min, options.max);
-  const rightOperand = generateRandInt(options.min, options.max);
+  const leftOperand = generateRandInt(options.operands.left.min, options.operands.left.max);
+  const rightOperand = generateRandInt(options.operands.right.min, options.operands.right.max);
 
   let operands = [leftOperand, rightOperand];
 
@@ -188,7 +206,7 @@ function getOperands(options: GeneratorOptions) {
 
   // avoid divide by zero
   if (options.operator === "/" && operands[1] === 0) {
-    operands[1] = generateRandInt(1, options.max);
+    operands[1] = generateRandInt(1, options.operands.right.max);
   }
 
   return operands;

@@ -14,10 +14,17 @@ export interface Problem {
   answer: number;
 }
 
-export interface GeneratorOptions {
-  operator: string;
+export interface Operand {
   min: number;
   max: number;
+}
+
+export interface GeneratorOptions {
+  operator: string;
+  operands: {
+    left: Operand;
+    right: Operand;
+  };
   numProblems: number;
   descOrder: boolean;
   noNegatives: boolean;
