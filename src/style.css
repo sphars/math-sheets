@@ -20,6 +20,7 @@ html {
 }
 
 body {
+  margin: 0;
   font-family: var(--font-sans);
 }
 
@@ -33,10 +34,12 @@ body > * {
   width: 100%;
 }
 
-nav,
-main > * {
+.header-wrapper,
+.main-wrapper,
+.footer-wrapper {
   max-width: var(--content-width);
   margin: 0 auto;
+  padding: 1rem;
 }
 
 header {
@@ -49,8 +52,19 @@ nav {
   justify-content: space-between;
 }
 
+.links {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.links a {
+  font-size: 20px;
+  color: #cad3f5;
+  text-decoration: none;
+}
+
 footer {
-  padding-top: 3rem;
   text-align: center;
 }
 
@@ -60,7 +74,6 @@ footer {
   align-items: center;
   justify-content: center;
   column-gap: 16px;
-  padding: 16px;
   text-decoration: none;
 }
 
@@ -295,7 +308,7 @@ input:disabled {
   .content-wrapper {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    column-gap: 1rem;
+    column-gap: 2rem;
   }
 }
 
