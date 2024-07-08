@@ -159,6 +159,17 @@ form input[type="number"] {
   width: 100px;
 }
 
+form .operands {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  column-gap: 2rem;
+}
+
+form .operands .operand-label {
+  margin-bottom: 0.5rem;
+}
+
 /* The generated "page" */
 #page-wrapper {
   max-height: 480px;
