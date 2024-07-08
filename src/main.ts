@@ -306,6 +306,11 @@ function generatePDF(problems: Problem[]) {
     data.push(formattedProblem);
   });
 
+  while (data.length < 5) {
+    // "pad" the data so that a miniumum of 5 columns is met
+    data.push("");
+  }
+
   const chunkedData = chunkArray(data, 5);
 
   doc.setFont("courier");
