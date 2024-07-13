@@ -37,6 +37,8 @@ const pdfButton = document.getElementById("pdf-button") as HTMLButtonElement;
 
 // --- Event listeners
 window.addEventListener("DOMContentLoaded", (event) => {
+  numProblemsInput.defaultValue = problemsPerPage.toString();
+
   // check if there are URL parameters
   const loadedOptions: GeneratorOptions = getOptionsFromURL();
   setFormValues(loadedOptions);
@@ -123,8 +125,11 @@ inputForm.addEventListener("reset", () => {
   page!.classList.add("d-none");
   page!.parentElement!.style.border = "none";
   pdfButton.classList.add("disabled");
+
+  // manually reset some values
   seedInput.defaultValue = generateRandomSeed().toString();
-  numProblemsInput.valueAsNumber = problemsPerPage;
+  seedInput.value = seedInput.defaultValue;
+  numProblemsInput.value = numProblemsInput.defaultValue;
   updatePagesNote();
 });
 
