@@ -20,6 +20,7 @@ export interface Operand {
 }
 
 export interface GeneratorOptions {
+  seed: number;
   operator: string;
   operands: {
     left: Operand;

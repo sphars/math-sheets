@@ -3,6 +3,7 @@ import "./style.css";
 import logo from "./assets/logo.svg";
 import { Problem, GeneratorOptions, Font } from "./interfaces";
 import fontsData from "./fonts.json";
+import { SeededRNG, generateRandomSeed } from "./generator";
 
 // --- Library Imports
 import "@fontsource-variable/roboto-flex";
@@ -24,6 +25,7 @@ const logoArea = document.querySelector<HTMLAnchorElement>("#logo")!;
 
 // --- Inputs
 const numProblemsInput = document.getElementById("num-problems") as HTMLInputElement;
+const seedInput = document.getElementById("seed") as HTMLInputElement;
 const fontSelect = document.getElementById("font-select") as HTMLSelectElement;
 const withHeaderCheckbox = document.getElementById("with-header") as HTMLInputElement;
 const withAnswersCheckbox = document.getElementById("with-answers") as HTMLInputElement;
@@ -51,6 +53,8 @@ window.addEventListener("DOMContentLoaded", (event) => {
     fonts.find((font) => font.name === fontSelect.value)?.family!
   );
   updatePagesNote();
+  numProblemsInput.defaultValue = itemsPerPage.toString();
+  seedInput.valueAsNumber = generateRandomSeed(); // TODO: don't do this if seed is in URL params
 });
 
 numProblemsInput.addEventListener("change", (event) => {
@@ -82,6 +86,7 @@ inputForm.addEventListener("submit", (e) => {
   const inputData = new FormData(inputForm);
 
   const options: GeneratorOptions = {
+    seed: inputData.get("seed") as unknown as number, // TODO: generate a new seed if not present
     operator: inputData.get("operator") as string,
     operands: {
       left: {
@@ -122,6 +127,7 @@ inputForm.addEventListener("reset", () => {
   page!.classList.add("d-none");
   page!.parentElement!.style.border = "none";
   pdfButton.classList.add("disabled");
+  seedInput.defaultValue = generateRandomSeed().toString();
 });
 
 // printButton.addEventListener("click", () => {
@@ -193,9 +199,9 @@ function getAnswer(left: number, right: number, operator: string) {
   return answer;
 }
 
-function getOperands(options: GeneratorOptions) {
-  const leftOperand = generateRandInt(options.operands.left.min, options.operands.left.max);
-  const rightOperand = generateRandInt(options.operands.right.min, options.operands.right.max);
+function getOperands(options: GeneratorOptions, rng: SeededRNG) {
+  const leftOperand = rng.nextInt(options.operands.left.min, options.operands.left.max);
+  const rightOperand = rng.nextInt(options.operands.right.min, options.operands.right.max);
 
   let operands = [leftOperand, rightOperand];
 
@@ -206,26 +212,28 @@ function getOperands(options: GeneratorOptions) {
 
   // avoid divide by zero
   if (options.operator === "/" && operands[1] === 0) {
-    operands[1] = generateRandInt(1, options.operands.right.max);
+    operands[1] = rng.nextInt(1, options.operands.right.max);
   }
 
   return operands;
 }
 
-function generateMathProblems(options: GeneratorOptions) {
+function generateMathProblems(options: GeneratorOptions): Problem[] {
+  const rng = new SeededRNG(options.seed);
+
   for (let i = 0; i < options.numProblems; i++) {
     // copy the form options
     const optionsCopy = JSON.parse(JSON.stringify(options)) as GeneratorOptions;
 
     // if operator = mix, need to randomize which operator to use
-    optionsCopy.operator = options.operator === "mix" ? operators[generateRandInt(0, 3)] : options.operator;
+    optionsCopy.operator = options.operator === "mix" ? operators[rng.nextInt(0, 3)] : options.operator;
 
-    let operands = getOperands(optionsCopy);
+    let operands = getOperands(optionsCopy, rng);
     let answer = getAnswer(operands[0], operands[1], optionsCopy.operator);
 
     if (options.intsOnly) {
       do {
-        operands = getOperands(options);
+        operands = getOperands(options, rng);
         answer = getAnswer(operands[0], operands[1], optionsCopy.operator);
       } while (!Number.isInteger(answer));
     }
@@ -290,7 +298,7 @@ function writeSingleProblem(problem: Problem, withAnswer: boolean = false) {
     line2 = `${operatorChar}${" ".repeat(spaceToAdd)}${problem.right}`;
   }
 
-  const line3 = "-".repeat(Math.max(line1.length, line2.length));
+  const line3 = "—".repeat(Math.max(line1.length, line2.length));
 
   if (!withAnswer) {
     return `${line1}\n${line2}\n${line3}`;

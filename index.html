@@ -151,16 +151,7 @@
                 <div class="form-field">
                   <label for="num-problems">Number of problems</label>
                   <div>
-                    <input
-                      required
-                      type="number"
-                      id="num-problems"
-                      name="num-problems"
-                      min="1"
-                      max="1000"
-                      step="1"
-                      value="35"
-                    />
+                    <input required type="number" id="num-problems" name="num-problems" min="1" max="1000" step="1" />
                   </div>
                 </div>
 
@@ -191,11 +182,16 @@
                     <label for="long-div-notation">Long division notation</label>
                   </div>
                 </div>
+
+                <div class="form-field">
+                  <label>Seed</label>
+                  <input type="number" id="seed" name="seed" min="0" max="1000000" step="1" value="" />
+                </div>
               </fieldset>
 
               <div>
                 <button type="submit" id="form-submit">Generate Problems</button>
-                <button type="reset">Reset</button>
+                <button type="reset">Reset to Default</button>
               </div>
             </form>
           </div>
