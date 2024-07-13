@@ -37,6 +37,10 @@ const pdfButton = document.getElementById("pdf-button") as HTMLButtonElement;
 
 // --- Event listeners
 window.addEventListener("DOMContentLoaded", (event) => {
+  // check if there are URL parameters
+  const loadedOptions: GeneratorOptions = getOptionsFromURL();
+  setFormValues(loadedOptions);
+
   // setup the font select
   fonts.forEach((font) => {
     const opt = document.createElement("option") as HTMLOptionElement;
@@ -52,8 +56,6 @@ window.addEventListener("DOMContentLoaded", (event) => {
     "--font-mono",
     fonts.find((font) => font.name === fontSelect.value)?.family!
   );
-  numProblemsInput.defaultValue = problemsPerPage.toString();
-  seedInput.valueAsNumber = generateRandomSeed(); // TODO: don't do this if seed is in URL params
   updatePagesNote();
 });
 
@@ -86,16 +88,10 @@ inputForm.addEventListener("submit", (e) => {
   const options: GeneratorOptions = {
     seed: inputData.get("seed") as unknown as number, // TODO: generate a new seed if not present
     operator: inputData.get("operator") as string,
-    operands: {
-      left: {
-        min: inputData.get("min-left") as unknown as number,
-        max: inputData.get("max-left") as unknown as number
-      },
-      right: {
-        min: inputData.get("min-right") as unknown as number,
-        max: inputData.get("max-right") as unknown as number
-      }
-    },
+    leftMin: inputData.get("left-min") as unknown as number,
+    leftMax: inputData.get("left-max") as unknown as number,
+    rightMin: inputData.get("right-min") as unknown as number,
+    rightMax: inputData.get("right-max") as unknown as number,
     numProblems: inputData.get("num-problems") as unknown as number,
     descOrder: inputData.get("desc-order") as unknown as boolean,
     noNegatives: inputData.get("no-negatives") as unknown as boolean,
@@ -117,6 +113,8 @@ inputForm.addEventListener("submit", (e) => {
   pdfButton.classList.remove("disabled");
   page!.classList.remove("d-none");
   page!.parentElement!.style.border = "1px solid #888";
+
+  setURLParameters(options);
 });
 
 inputForm.addEventListener("reset", () => {
@@ -147,6 +145,29 @@ pdfButton.addEventListener("click", () => {
 // logoArea.innerHTML = `<img src="${logo}" class="logo" alt="Math Sheets logo" />`;
 
 // --- Functions
+function setFormValues(options: GeneratorOptions) {
+  for (const [key, value] of Object.entries(options)) {
+    // simple map of GeneratorOption key to form name
+    const inputName =
+      {
+        leftMin: "left-min",
+        leftMax: "left-max",
+        rightMin: "right-min",
+        rightMax: "right-max",
+        numProblems: "num-problems",
+        descOrder: "desc-order",
+        noNegatives: "no-negatives",
+        intsOnly: "ints-only",
+        fontSelect: "font-select"
+      }[key] || key;
+
+    const formElement = inputForm.elements.namedItem(inputName) as any;
+    if (formElement) {
+      formElement.value = value;
+    }
+  }
+}
+
 function setCSSVariable(element: HTMLElement, variable: string, value: string) {
   element.style.setProperty(variable, value);
 }
@@ -200,8 +221,8 @@ function getAnswer(left: number, right: number, operator: string) {
 }
 
 function getOperands(options: GeneratorOptions, rng: SeededRNG) {
-  const leftOperand = rng.nextInt(options.operands.left.min, options.operands.left.max);
-  const rightOperand = rng.nextInt(options.operands.right.min, options.operands.right.max);
+  const leftOperand = rng.nextInt(options.leftMin, options.leftMax);
+  const rightOperand = rng.nextInt(options.rightMin, options.rightMax);
 
   let operands = [leftOperand, rightOperand];
 
@@ -212,7 +233,7 @@ function getOperands(options: GeneratorOptions, rng: SeededRNG) {
 
   // avoid divide by zero
   if (options.operator === "/" && operands[1] === 0) {
-    operands[1] = rng.nextInt(1, options.operands.right.max);
+    operands[1] = rng.nextInt(1, options.rightMax);
   }
 
   return operands;
@@ -375,4 +396,31 @@ function generatePDF(problems: Problem[]) {
   });
 
   doc.save(`math-sheet${withAnswersCheckbox.checked ? "_answers" : ""}.pdf`);
+}
+
+function setURLParameters(options: GeneratorOptions) {
+  const formData = new FormData(inputForm);
+  formData.append("font-select", fontSelect.value); // TODO: add font as a saved value?
+  const searchParams = new URLSearchParams(formData as unknown as Record<string, string>);
+
+  const newURL = `${window.location.pathname}?${searchParams.toString()}`;
+  window.history.pushState({ path: newURL }, "", newURL);
+}
+
+function getOptionsFromURL(): GeneratorOptions {
+  const params = new URLSearchParams(window.location.search);
+
+  return {
+    seed: parseInt(params.get("seed") || generateRandomSeed().toString(), 10),
+    operator: params.get("operator") || "+",
+    leftMin: parseInt(params.get("left-min") || "0"),
+    leftMax: parseInt(params.get("lef-max") || "100"),
+    rightMin: parseInt(params.get("right-min") || "0"),
+    rightMax: parseInt(params.get("right-max") || "100"),
+    numProblems: parseInt(params.get("num-problems") || problemsPerPage.toString(), 10),
+    descOrder: params.get("desc-order") === "on",
+    noNegatives: params.get("no-negatives") === "on",
+    intsOnly: params.get("ints-only") === "on",
+    fontSelect: params.get("font-select") || "Courier" // TODO: add font as a saved value?
+  };
 }

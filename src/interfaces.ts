@@ -14,18 +14,13 @@ export interface Problem {
   answer: number;
 }
 
-export interface Operand {
-  min: number;
-  max: number;
-}
-
 export interface GeneratorOptions {
   seed: number;
   operator: string;
-  operands: {
-    left: Operand;
-    right: Operand;
-  };
+  leftMin: number;
+  leftMax: number;
+  rightMin: number;
+  rightMax: number;
   numProblems: number;
   descOrder: boolean;
   noNegatives: boolean;
