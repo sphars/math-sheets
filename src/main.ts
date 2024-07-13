@@ -13,7 +13,7 @@ import { autoTable } from "jspdf-autotable";
 // --- Script vars
 const operators = ["+", "-", "*", "/"];
 const fonts: Font[] = fontsData.fonts.sort((a, b) => a.name.localeCompare(b.name));
-const itemsPerPage = 35;
+const problemsPerPage = 24;
 let generatedProblems: Problem[] = [];
 
 // --- Elements
@@ -52,14 +52,12 @@ window.addEventListener("DOMContentLoaded", (event) => {
     "--font-mono",
     fonts.find((font) => font.name === fontSelect.value)?.family!
   );
-  updatePagesNote();
-  numProblemsInput.defaultValue = itemsPerPage.toString();
+  numProblemsInput.defaultValue = problemsPerPage.toString();
   seedInput.valueAsNumber = generateRandomSeed(); // TODO: don't do this if seed is in URL params
+  updatePagesNote();
 });
 
-numProblemsInput.addEventListener("change", (event) => {
-  updatePagesNote();
-});
+numProblemsInput.addEventListener("change", updatePagesNote);
 
 fontSelect.addEventListener("change", (event) => {
   setCSSVariable(
@@ -128,6 +126,8 @@ inputForm.addEventListener("reset", () => {
   page!.parentElement!.style.border = "none";
   pdfButton.classList.add("disabled");
   seedInput.defaultValue = generateRandomSeed().toString();
+  numProblemsInput.valueAsNumber = problemsPerPage;
+  updatePagesNote();
 });
 
 // printButton.addEventListener("click", () => {
@@ -152,7 +152,7 @@ function setCSSVariable(element: HTMLElement, variable: string, value: string) {
 }
 
 function getNumPages(numProblems: number) {
-  return Math.ceil((numProblems - itemsPerPage) / itemsPerPage) + 1;
+  return Math.ceil((numProblems - problemsPerPage) / problemsPerPage) + 1;
 }
 
 function showPageHeader() {
@@ -166,7 +166,7 @@ function updatePagesNote() {
   if (pagesNote)
     pagesNote.textContent =
       `${pages} page${pages === 1 ? "" : "s"}, ` +
-      `${+numProblemsInput.value < itemsPerPage ? +numProblemsInput.value : itemsPerPage} problems per page`;
+      `${+numProblemsInput.value < problemsPerPage ? +numProblemsInput.value : problemsPerPage} problems per page`;
 }
 
 function generateRandInt(min: number, max: number) {
@@ -250,7 +250,7 @@ function generateMathProblems(options: GeneratorOptions): Problem[] {
 }
 
 function writeProblems(problems: Problem[], withAnswer: boolean = false) {
-  const problemGroups = chunkArray(problems, itemsPerPage); // chunk into groups of 35 (one page)
+  const problemGroups = chunkArray(problems, problemsPerPage); // chunk into groups of {{problemsPerPage}}
 
   const mathProblemNodes = problemGroups.map((group) => {
     const gridItems = group
@@ -323,7 +323,7 @@ function generatePDF(problems: Problem[]) {
   doc.setFont("Courier");
   doc.setFontSize(16);
 
-  const columns = ["", "", "", "", ""];
+  const columns = ["", "", "", ""];
   let data: string[] = [];
 
   // prepare table data
@@ -332,34 +332,33 @@ function generatePDF(problems: Problem[]) {
     data.push(formattedProblem);
   });
 
-  while (data.length < 5) {
-    // "pad" the data so that a miniumum of 5 columns is met
+  while (data.length < columns.length) {
+    // "pad" the data so that a miniumum number of columns is met
     data.push("");
   }
 
-  const chunkedData = chunkArray(data, 5);
+  const chunkedData = chunkArray(data, columns.length);
 
   doc.setFont("courier");
   autoTable(doc, {
     body: chunkedData,
     columnStyles: {
-      0: { halign: "right", cellPadding: { right: 10 } },
-      1: { halign: "right", cellPadding: { right: 10 } },
-      2: { halign: "right", cellPadding: { right: 10 } },
-      3: { halign: "right", cellPadding: { right: 10 } },
-      4: { halign: "right", cellPadding: { right: 10 } }
+      0: { halign: "right", cellPadding: { right: 12 } },
+      1: { halign: "right", cellPadding: { right: 12 } },
+      2: { halign: "right", cellPadding: { right: 12 } },
+      3: { halign: "right", cellPadding: { right: 12 } }
     },
     styles: {
       halign: "center",
       valign: "middle",
       font: "Courier",
       fontSize: 16,
-      minCellHeight: 36,
-      minCellWidth: 26,
+      minCellHeight: 40,
+      minCellWidth: 28,
       textColor: "black"
     },
     theme: "plain",
-    margin: { horizontal: 16, vertical: 22 },
+    margin: { vertical: 28, horizontal: 16 },
     didDrawPage: (data) => {
       // footer
       let footer = `Created with Math Sheets - mathsheets.net`;
