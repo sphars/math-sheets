@@ -30,13 +30,17 @@
     <main>
       <div class="main-wrapper">
         <div class="information">
-          <p>A math problem generator. Use the form options below to specify what kind of problems to generate.</p>
-          <p>Note that some options are still a work in progress and are disabled at this time.</p>
+          <h1>Math Sheets Generator</h1>
+          <p>A form to generate simple math problems and create worksheets for printing.</p>
+          <p>
+            Use the form options below to specify what kind of problems to generate. Note that some options are still a
+            work in progress and are disabled at this time.
+          </p>
         </div>
 
         <div class="content-wrapper">
           <div class="form-wrapper">
-            <h2>Generate Problems</h2>
+            <h2>Options</h2>
             <form id="input-form">
               <fieldset>
                 <legend>Operator</legend>
@@ -153,6 +157,7 @@
                   <div>
                     <input required type="number" id="num-problems" name="num-problems" min="1" max="1000" step="1" />
                   </div>
+                  <div id="pages"></div>
                 </div>
 
                 <div class="form-field">
@@ -183,21 +188,31 @@
                   </div>
                 </div>
 
-                <div class="form-field">
-                  <label>Seed</label>
-                  <input type="number" id="seed" name="seed" min="0" max="1000000" step="1" value="" />
+                <div class="form-field seed-field">
+                  <div>
+                    <label>Seed</label>
+                    <div>
+                      <input type="number" id="seed" name="seed" min="0" max="1000000" step="1" value="" />
+                    </div>
+                  </div>
+                  <div>
+                    <button type="button" class="secondary" id="reseed">New Seed</button>
+                  </div>
                 </div>
               </fieldset>
 
-              <div>
+              <div class="form-actions">
+                <button type="reset" class="secondary">Reset to Default</button>
                 <button type="submit" id="form-submit">Generate Problems</button>
-                <button type="reset">Reset to Default</button>
               </div>
             </form>
           </div>
 
           <div class="preview-wrapper">
             <h2>Preview</h2>
+            <div class="generate-pdf">
+              <button type="button" id="pdf-button" class="disabled">Generate PDF</button>
+            </div>
             <div id="actions">
               <div class="form-field">
                 <label for="font-select">Font</label>
@@ -217,11 +232,6 @@
                   <label for="with-answers">With answers</label>
                 </div>
               </div>
-            </div>
-
-            <div class="generate-pdf">
-              <button type="button" id="pdf-button" class="disabled">Generate PDF</button>
-              <div id="pages"></div>
             </div>
 
             <div id="page-wrapper">

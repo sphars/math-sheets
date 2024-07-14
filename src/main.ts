@@ -31,6 +31,7 @@ const withHeaderCheckbox = document.getElementById("with-header") as HTMLInputEl
 const withAnswersCheckbox = document.getElementById("with-answers") as HTMLInputElement;
 
 // --- Buttons
+const reseedButton = document.getElementById("reseed") as HTMLButtonElement;
 const formSubmitButton = document.getElementById("form-submit") as HTMLButtonElement;
 // const printButton = document.getElementById("print-button") as HTMLButtonElement;
 const pdfButton = document.getElementById("pdf-button") as HTMLButtonElement;
@@ -83,6 +84,10 @@ withAnswersCheckbox.addEventListener("click", (event: any) => {
   }
 });
 
+reseedButton.addEventListener("click", (e) => {
+  seedInput.value = generateRandomSeed().toString();
+});
+
 inputForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const inputData = new FormData(inputForm);
@@ -116,7 +121,7 @@ inputForm.addEventListener("submit", (e) => {
   page!.classList.remove("d-none");
   page!.parentElement!.style.border = "1px solid #888";
 
-  setURLParameters(options);
+  setURLParameters();
 });
 
 inputForm.addEventListener("reset", () => {
@@ -131,6 +136,7 @@ inputForm.addEventListener("reset", () => {
   seedInput.value = seedInput.defaultValue;
   numProblemsInput.value = numProblemsInput.defaultValue;
   updatePagesNote();
+  setURLParameters();
 });
 
 // printButton.addEventListener("click", () => {
@@ -387,7 +393,7 @@ function generatePDF(problems: Problem[]) {
     margin: { vertical: 28, horizontal: 16 },
     didDrawPage: (data) => {
       // footer
-      let footer = `Created with Math Sheets - mathsheets.net`;
+      let footer = `Created with mathsheets.net`;
       const pageSize = doc.internal.pageSize;
       const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
       const pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth();
@@ -403,7 +409,7 @@ function generatePDF(problems: Problem[]) {
   doc.save(`math-sheet${withAnswersCheckbox.checked ? "_answers" : ""}.pdf`);
 }
 
-function setURLParameters(options: GeneratorOptions) {
+function setURLParameters() {
   const formData = new FormData(inputForm);
   formData.append("font-select", fontSelect.value); // TODO: add font as a saved value?
   const searchParams = new URLSearchParams(formData as unknown as Record<string, string>);

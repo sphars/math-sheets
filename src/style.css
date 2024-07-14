@@ -39,7 +39,7 @@ body > * {
 .footer-wrapper {
   max-width: var(--content-width);
   margin: 0 auto;
-  padding: 1rem;
+  padding: 1.5rem 1rem;
 }
 
 header {
@@ -98,6 +98,11 @@ footer {
 
 .information {
   margin: 2rem auto;
+}
+
+.preview-wrapper {
+  display: flex;
+  flex-direction: column;
 }
 
 #actions {
@@ -183,12 +188,30 @@ form .operands .operand-label {
   margin-bottom: 0.5rem;
 }
 
+form .seed-field {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  column-gap: 1rem;
+}
+
+form .form-actions {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
 /* The generated "page" */
+#pages {
+  font-size: 0.85rem;
+}
+
 #page-wrapper {
-  max-height: 480px;
-  width: 100%;
+  max-height: 400px;
   overflow: auto;
-  margin-bottom: 0.5rem;
 }
 
 #page {
@@ -263,14 +286,19 @@ pre {
 button {
   background-color: #24273a;
   color: #cad3f5;
-  margin: 8px 0;
+  /* margin: 8px 0; */
   padding: 8px 16px;
   border: none;
   border-radius: 6px;
   font-family: inherit;
   text-align: center;
-  font-size: 1.125rem;
+  font-size: 1rem;
   cursor: pointer;
+}
+
+button.secondary {
+  background-color: #cad3f5;
+  color: #24273a;
 }
 
 button.disabled {
@@ -288,6 +316,7 @@ input:disabled {
   flex-flow: row wrap;
   align-items: center;
   column-gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .hidden {
@@ -309,6 +338,11 @@ input:disabled {
     display: grid;
     grid-template-columns: 1fr 1fr;
     column-gap: 2rem;
+  }
+
+  #page-wrapper {
+    max-height: none;
+    flex: 1 1 0;
   }
 }
 
