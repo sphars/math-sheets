@@ -1,6 +1,6 @@
 {
   "name": "math-sheets",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "private": true,
   "description": "A simple website for printing math worksheets",
   "scripts": {
@@ -30,11 +30,11 @@
   },
   "devDependencies": {
     "@fontsource-variable/roboto-flex": "^5.0.15",
-    "@types/node": "^20.14.9",
+    "@types/node": "^20.14.10",
     "husky": "^9.0.11",
-    "prettier": "3.3.2",
+    "prettier": "3.3.3",
     "semver": "^7.6.2",
-    "typescript": "^5.5.2",
-    "vite": "^5.3.1"
+    "typescript": "^5.5.3",
+    "vite": "^5.3.3"
   }
 }
