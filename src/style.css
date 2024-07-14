@@ -288,7 +288,7 @@ button {
   color: #cad3f5;
   /* margin: 8px 0; */
   padding: 8px 16px;
-  border: none;
+  border: 1px solid #494d64;
   border-radius: 6px;
   font-family: inherit;
   text-align: center;
@@ -297,8 +297,9 @@ button {
 }
 
 button.secondary {
-  background-color: #cad3f5;
+  background-color: #b8c0e0;
   color: #24273a;
+  border: 1px solid #939ab7;
 }
 
 button.disabled {
