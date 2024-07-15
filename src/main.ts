@@ -1,4 +1,5 @@
 // --- Imports
+import "@fontsource-variable/roboto-flex";
 import "./style.css";
 import logo from "./assets/logo.svg";
 import { Problem, GeneratorOptions, Font } from "./interfaces";
@@ -6,7 +7,6 @@ import fontsData from "./fonts.json";
 import { SeededRNG, generateRandomSeed } from "./generator";
 
 // --- Library Imports
-import "@fontsource-variable/roboto-flex";
 import { jsPDF } from "jspdf";
 import { autoTable } from "jspdf-autotable";
 
@@ -172,9 +172,16 @@ function setFormValues(options: GeneratorOptions) {
         fontSelect: "font-select"
       }[key] || key;
 
-    const formElement = inputForm.elements.namedItem(inputName) as any;
+    const formElement = inputForm.elements.namedItem(inputName) as HTMLInputElement;
     if (formElement) {
-      formElement.value = value;
+      switch (formElement.type) {
+        case "checkbox":
+          formElement.checked = value;
+          break;
+        default:
+          formElement.value = value;
+          break;
+      }
     }
   }
 }
@@ -421,6 +428,7 @@ function setURLParameters() {
 function getOptionsFromURL(): GeneratorOptions {
   const params = new URLSearchParams(window.location.search);
 
+  // return a GeneratorOptions object with either the values from the params or default values
   return {
     seed: parseInt(params.get("seed") || generateRandomSeed().toString(), 10),
     operator: params.get("operator") || "+",
@@ -429,9 +437,9 @@ function getOptionsFromURL(): GeneratorOptions {
     rightMin: parseInt(params.get("right-min") || "0"),
     rightMax: parseInt(params.get("right-max") || "100"),
     numProblems: parseInt(params.get("num-problems") || problemsPerPage.toString(), 10),
-    descOrder: params.get("desc-order") === "on",
-    noNegatives: params.get("no-negatives") === "on",
-    intsOnly: params.get("ints-only") === "on",
+    descOrder: params.get("desc-order") ? params.get("desc-order") === "on" : false,
+    noNegatives: params.get("no-negatives") ? params.get("no-negatives") === "on" : false,
+    intsOnly: params.get("ints-only") ? params.get("ints-only") === "on" : false,
     fontSelect: params.get("font-select") || "Courier" // TODO: add font as a saved value?
   };
 }
