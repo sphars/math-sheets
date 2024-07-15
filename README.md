@@ -10,37 +10,38 @@ Built with HTML, CSS and Typescript and Vite in (more than) a few hours. I'm als
 
 For generating the problems, there's several configuration options:
 
-- Choose from the 4 operators to generate problems for (using a mix is WIP)
+- Choose from the 4 operators to generate problems for, or use a mix of operators
 - Set the min/max operand values (0-1000 inclusive, may adjust)
   - The two operand min/max values can be set independently
   - For division problems, the second operand is regenerated if it's 0 to avoid divide by zero problems
 - Set the number of problems to generate
-  - Currently I'm creating the PDF so that it fits 35 problems (5x7) per page, which may change
+  - Currently I'm creating the PDF so that it fits 24 problems (4x6) per page, which may change
 - Set the operand order (highest or lowest first)
-- Don't have negative answers, which overrides operand order to highest first (helpful with subtraction problems)
-- Make answers be integers only (for division problems)
-  - If unselected, then answers are rounded to 3 decimal places
-- (WIP) Change the division notation to long division
+- Option to not have negative answers, which overrides operand order to highest first (helpful with subtraction problems)
+- Option to make answers be integers only (for division problems)
+  - If unselected, then answers are rounded to 3 decimal places where needed
+- Configuration options and resulting problems can be saved by using the same URL
+  - When the problems are generated, the URL will add parameters to include what options are set and their values
+  - When returning to the site with the same URL, the problems generated will be the same, handled by the `seed` value in the form. A different seed will generate different problems
+
 
 For generating the PDFs, there's a couple options to change:
 
-- (WIP) Set the font to one of several monospace fonts (see below)
 - Add the header to the first page
   - Header is simply `NAME: ________ DATE: ______`, like back in school
 - Show the answers on the page (an answer sheet)
 
 ## Status
 
-It's at the MVP stage right now, with all basic functionality available.
+It's at the MVP stage right now with basic functionality available.
 
 There are a couple features still in-progress:
 
+- Better styling (like dark mode)
 - Use alternative notations, such as the long-division notation
-- Better styling
-- Saving config via URL parameters
 - Using custom fonts in the PDF (only Courier is available in the PDF for now)
 
-See [ISSUES](https://github.com/sphars/math-sheets/issues) for more details.
+See [ISSUES](https://github.com/sphars/math-sheets/issues) for details about upcoming features.
 
 ## Development
 

@@ -30,13 +30,17 @@
     <main>
       <div class="main-wrapper">
         <div class="information">
-          <p>A math problem generator. Use the form options below to specify what kind of problems to generate.</p>
-          <p>Note that some options are still a work in progress and are disabled at this time.</p>
+          <h1>Math Sheets Generator</h1>
+          <p>A form to generate simple math problems and create worksheets for printing.</p>
+          <p>
+            Use the form options below to specify what kind of problems to generate. Note that some options are still a
+            work in progress and are disabled at this time.
+          </p>
         </div>
 
         <div class="content-wrapper">
           <div class="form-wrapper">
-            <h2>Generate Problems</h2>
+            <h2>Options</h2>
             <form id="input-form">
               <fieldset>
                 <legend>Operator</legend>
@@ -85,12 +89,12 @@
                   <div class="operand-min-max" id="operand-left">
                     <div class="operand-label">Left</div>
                     <div class="form-field">
-                      <label for="min-left">Minimum</label>
+                      <label for="left-min">Minimum</label>
                       <input
                         required
                         type="number"
-                        id="min-left"
-                        name="min-left"
+                        id="left-min"
+                        name="left-min"
                         min="0"
                         max="999"
                         step="1"
@@ -99,12 +103,12 @@
                     </div>
 
                     <div class="form-field">
-                      <label for="max-left">Maximum</label>
+                      <label for="left-max">Maximum</label>
                       <input
                         required
                         type="number"
-                        id="max-left"
-                        name="max-left"
+                        id="left-max"
+                        name="left-max"
                         min="0"
                         max="1000"
                         step="1"
@@ -116,12 +120,12 @@
                   <div class="operand-min-max" id="operand-right">
                     <div class="operand-label">Right</div>
                     <div class="form-field">
-                      <label for="min-right">Minimum</label>
+                      <label for="right-min">Minimum</label>
                       <input
                         required
                         type="number"
-                        id="min-right"
-                        name="min-right"
+                        id="right-min"
+                        name="right-min"
                         min="0"
                         max="999"
                         step="1"
@@ -130,12 +134,12 @@
                     </div>
 
                     <div class="form-field">
-                      <label for="max-right">Maximum</label>
+                      <label for="right-max">Maximum</label>
                       <input
                         required
                         type="number"
-                        id="max-right"
-                        name="max-right"
+                        id="right-max"
+                        name="right-max"
                         min="0"
                         max="1000"
                         step="1"
@@ -151,22 +155,14 @@
                 <div class="form-field">
                   <label for="num-problems">Number of problems</label>
                   <div>
-                    <input
-                      required
-                      type="number"
-                      id="num-problems"
-                      name="num-problems"
-                      min="1"
-                      max="1000"
-                      step="1"
-                      value="35"
-                    />
+                    <input required type="number" id="num-problems" name="num-problems" min="1" max="1000" step="1" />
                   </div>
+                  <div id="pages"></div>
                 </div>
 
                 <div class="form-field">
                   <div>
-                    <input type="checkbox" id="desc-order" name="desc-order" checked />
+                    <input type="checkbox" id="desc-order" name="desc-order" />
                     <label for="desc-order">Operands in descending order</label>
                   </div>
                 </div>
@@ -191,17 +187,32 @@
                     <label for="long-div-notation">Long division notation</label>
                   </div>
                 </div>
+
+                <div class="form-field seed-field">
+                  <div>
+                    <label>Seed</label>
+                    <div>
+                      <input required type="number" id="seed" name="seed" min="0" max="100000000" step="1" value="" />
+                    </div>
+                  </div>
+                  <div>
+                    <button type="button" class="secondary" id="reseed">New Seed</button>
+                  </div>
+                </div>
               </fieldset>
 
-              <div>
+              <div class="form-actions">
+                <button type="reset" class="secondary">Reset to Default</button>
                 <button type="submit" id="form-submit">Generate Problems</button>
-                <button type="reset">Reset</button>
               </div>
             </form>
           </div>
 
           <div class="preview-wrapper">
             <h2>Preview</h2>
+            <div class="generate-pdf">
+              <button type="button" id="pdf-button" class="disabled">Generate PDF</button>
+            </div>
             <div id="actions">
               <div class="form-field">
                 <label for="font-select">Font</label>
@@ -221,11 +232,6 @@
                   <label for="with-answers">With answers</label>
                 </div>
               </div>
-            </div>
-
-            <div class="generate-pdf">
-              <button type="button" id="pdf-button" class="disabled">Generate PDF</button>
-              <div id="pages"></div>
             </div>
 
             <div id="page-wrapper">
