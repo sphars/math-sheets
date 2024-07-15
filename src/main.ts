@@ -419,9 +419,9 @@ function generatePDF(problems: Problem[]) {
 function setURLParameters() {
   const formData = new FormData(inputForm);
   formData.append("font-select", fontSelect.value); // TODO: add font as a saved value?
-  const searchParams = new URLSearchParams(formData as unknown as Record<string, string>);
+  const searchParams = new URLSearchParams(formData as any).toString();
 
-  const newURL = `${window.location.pathname}?${searchParams.toString()}`;
+  const newURL = `${window.location.pathname}?${searchParams}`;
   window.history.pushState({ path: newURL }, "", newURL);
 }
 

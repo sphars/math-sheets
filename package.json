@@ -1,8 +1,8 @@
 {
   "name": "math-sheets",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "private": true,
-  "description": "A simple website for printing math worksheets",
+  "description": "Generate PDF worksheets of simple math problems in the browser.",
   "scripts": {
     "prepare": "husky",
     "postinstall": "npm run fonts",
