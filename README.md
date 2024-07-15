@@ -1,6 +1,6 @@
 # Math Sheets
 
-Generate simple math worksheets in the browser for printing or whatever.
+Generate PDF worksheets of simple math problems in the browser.
 
 Inspired by the worksheets my dad printed off for my siblings and I during the summer breaks. I'm recreating this purely by memory; all I remember is that it was a grid of math problems, printed on a dot matrix printer. Not sure what he created his sheets in (likely QBasic or VisualBasic as this was late 1990s), so my attempt is to recreate this as close as possible, using modern web technologies.
 
