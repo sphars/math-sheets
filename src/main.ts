@@ -2,9 +2,8 @@
 import "@fontsource-variable/roboto-flex";
 import "98.css/dist/98.css";
 import "./style.css";
-import logo from "./assets/logo.svg";
-import { Problem, GeneratorOptions, Font } from "./interfaces";
 import fontsData from "./fonts.json";
+import { Problem, GeneratorOptions, Font } from "./interfaces";
 import { SeededRNG, generateRandomSeed } from "./generator";
 
 // --- Library Imports
@@ -12,6 +11,8 @@ import { jsPDF } from "jspdf";
 import { autoTable } from "jspdf-autotable";
 
 // --- Script vars
+const tileImages = import.meta.glob<{ default: string }>("./tiles/*.png", { eager: true });
+const imageUrls = Object.values(tileImages).map((module) => module.default);
 const operators = ["+", "-", "*", "/"];
 const fonts: Font[] = fontsData.fonts.sort((a, b) => a.name.localeCompare(b.name));
 const problemsPerPage = 24;
@@ -24,7 +25,6 @@ const inputForm = document.getElementById("input-form") as HTMLFormElement;
 const statProblems = document.getElementById("stat-problems");
 const statPages = document.getElementById("stat-pages");
 const logoArea = document.querySelector<HTMLAnchorElement>("#logo")!;
-const windowButtons = document.querySelectorAll(".title-bar-controls button");
 
 // --- Inputs
 const numProblemsInput = document.getElementById("num-problems") as HTMLInputElement;
@@ -38,6 +38,12 @@ const reseedButton = document.getElementById("reseed") as HTMLButtonElement;
 const formSubmitButton = document.getElementById("form-submit") as HTMLButtonElement;
 // const printButton = document.getElementById("print-button") as HTMLButtonElement;
 const pdfButton = document.getElementById("pdf-button") as HTMLButtonElement;
+const windowButtons = document.querySelectorAll(".title-bar-controls button");
+
+// --- Dialogs
+const creditsButton = document.querySelector("#credits") as HTMLButtonElement;
+const creditsDialog = document.querySelector("dialog") as HTMLDialogElement;
+const creditsDialogCloseButton = document.querySelectorAll("dialog button") as unknown as HTMLButtonElement[];
 
 // --- Event listeners
 window.addEventListener("DOMContentLoaded", (event) => {
@@ -95,6 +101,16 @@ withAnswersCheckbox.addEventListener("click", (event: any) => {
 
 reseedButton.addEventListener("click", (e) => {
   seedInput.value = generateRandomSeed().toString();
+});
+
+creditsButton.addEventListener("click", (e) => {
+  creditsDialog.showModal();
+});
+
+creditsDialogCloseButton.forEach((button) => {
+  button.addEventListener("click", () => {
+    creditsDialog.close();
+  });
 });
 
 inputForm.addEventListener("submit", (e) => {
@@ -193,6 +209,12 @@ function setFormValues(options: GeneratorOptions) {
       }
     }
   }
+}
+
+function setBodyBackground() {
+  const randomIndex = generateRandInt(0, imageUrls.length - 1);
+  const randomImageUrl = imageUrls[randomIndex];
+  document.body.style.backgroundImage = `url(${randomImageUrl})`;
 }
 
 function setCSSVariable(element: HTMLElement, variable: string, value: string) {
@@ -457,3 +479,5 @@ function getOptionsFromURL(): GeneratorOptions {
     fontSelect: params.get("font-select") || "Courier" // TODO: add font as a saved value?
   };
 }
+
+setBodyBackground();

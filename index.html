@@ -22,9 +22,9 @@
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="manifest" href="/site.webmanifest" />
   </head>
   <body>
@@ -40,16 +40,12 @@
         <div class="window-body">
           <p>Generate PDF worksheets of simple math problems in the browser.</p>
           <p>
-            Use the form options below to specify what kind of problems to generate. Note that some options are still a
-            work in progress and are disabled at the moment.
-          </p>
-          <p>
             This website is a tribute to all those worksheets created by my dad for my siblings and I to do during
-            summer vacations. Thanks Dad!
+            summer vacations. This was back in the late 90s/early 00s, hence the Windows 98 theme. Thanks Dad!
           </p>
           <p>
-            This site is open-source and is licensed under the MIT license. Have any comments or bugs to report? File an
-            issue on <a href="https://github.com/sphars/math-sheets/issues" target="_blank">GitHub</a>.
+            This website is open-source and is licensed under the MIT license. Have any comments or bugs to report? File
+            an issue on <a href="https://github.com/sphars/math-sheets" target="_blank">GitHub</a>.
           </p>
 
           <noscript>
@@ -60,6 +56,7 @@
           </noscript>
 
           <section class="field-row window-actions">
+            <button id="credits">Credits</button>
             <button>OK</button>
           </section>
         </div>
@@ -76,6 +73,10 @@
             </div>
           </div>
           <div class="window-body spaced">
+            <p>
+              Use the options below to specify what kind of problems to generate. Note that some options are still a
+              work in progress and are disabled at the moment.
+            </p>
             <form id="input-form">
               <fieldset>
                 <legend>Operator</legend>
@@ -210,6 +211,10 @@
           </div>
 
           <div class="window-body spaced">
+            <p>
+              Due to differences in HTML vs PDF rendering, the PDF will not look quite the same as what you see below.
+              But you get the gist of it.
+            </p>
             <div class="fields">
               <div class="field-row">
                 <label for="font-select">Font</label>
@@ -250,6 +255,36 @@
         </div>
       </div>
     </div>
+
+    <dialog>
+      <div class="window">
+        <div class="title-bar">
+          <div class="title-bar-text">Credits</div>
+          <div class="title-bar-controls">
+            <button aria-label="Close"></button>
+          </div>
+        </div>
+        <div class="window-body">
+          <p>This site was made with the following</p>
+          <ul>
+            <li><a href="https://jdan.github.io/98.css/" target="_blank">98.css</a> for the awesome CSS library</li>
+            <li><a href="https://github.com/parallax/jsPDF" target="_blank">jsPDF</a> for generating PDFs</li>
+            <li>
+              <a href="https://github.com/simonbengtsson/jsPDF-AutoTable" target="_blank">jsPDF-AutoTable</a> for using
+              tables in the PDF
+            </li>
+            <li>
+              <a href="https://windowswallpaper.miraheze.org/wiki/Windows_95" target="_blank">Windows Wallpaper Wiki</a>
+              (and Microsoft, I guess) for background tiles
+            </li>
+          </ul>
+
+          <section class="window-actions">
+            <button>Close</button>
+          </section>
+        </div>
+      </div>
+    </dialog>
     <script src="src/main.ts" type="module"></script>
   </body>
 </html>
