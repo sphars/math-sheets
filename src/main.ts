@@ -1,5 +1,6 @@
 // --- Imports
 import "@fontsource-variable/roboto-flex";
+import "98.css/dist/98.css";
 import "./style.css";
 import logo from "./assets/logo.svg";
 import { Problem, GeneratorOptions, Font } from "./interfaces";
@@ -20,8 +21,10 @@ let generatedProblems: Problem[] = [];
 const page = document.getElementById("page") as HTMLDivElement;
 const pageContent = document.getElementById("page-content") as HTMLDivElement;
 const inputForm = document.getElementById("input-form") as HTMLFormElement;
-const pagesNote = document.getElementById("pages");
+const statProblems = document.getElementById("stat-problems");
+const statPages = document.getElementById("stat-pages");
 const logoArea = document.querySelector<HTMLAnchorElement>("#logo")!;
+const windowButtons = document.querySelectorAll(".title-bar-controls button");
 
 // --- Inputs
 const numProblemsInput = document.getElementById("num-problems") as HTMLInputElement;
@@ -60,6 +63,12 @@ window.addEventListener("DOMContentLoaded", (event) => {
     fonts.find((font) => font.name === fontSelect.value)?.family!
   );
   updatePagesNote();
+});
+
+windowButtons.forEach((element) => {
+  element.addEventListener("click", () => {
+    console.log("Sorry, this doesn't do anything. Yet.");
+  });
 });
 
 numProblemsInput.addEventListener("change", updatePagesNote);
@@ -117,7 +126,7 @@ inputForm.addEventListener("submit", (e) => {
     fonts.find((font) => font.name === fontSelect.value)?.family!
   );
 
-  pdfButton.classList.remove("disabled");
+  pdfButton.removeAttribute("disabled");
   page!.classList.remove("d-none");
   page!.parentElement!.style.border = "1px solid #888";
 
@@ -129,14 +138,14 @@ inputForm.addEventListener("reset", () => {
   generatedProblems.length = 0;
   page!.classList.add("d-none");
   page!.parentElement!.style.border = "none";
-  pdfButton.classList.add("disabled");
+  pdfButton.setAttribute("disabled", "disabled");
 
   // manually reset some values
   seedInput.defaultValue = generateRandomSeed().toString();
   seedInput.value = seedInput.defaultValue;
   numProblemsInput.value = numProblemsInput.defaultValue;
   updatePagesNote();
-  setURLParameters();
+  setURLParameters(true);
 });
 
 // printButton.addEventListener("click", () => {
@@ -202,10 +211,10 @@ function showPageHeader() {
 
 function updatePagesNote() {
   const pages = getNumPages(+numProblemsInput.value);
-  if (pagesNote)
-    pagesNote.textContent =
-      `${pages} page${pages === 1 ? "" : "s"}, ` +
-      `${+numProblemsInput.value < problemsPerPage ? +numProblemsInput.value : problemsPerPage} problems per page`;
+  if (statProblems && statPages) {
+    statProblems.textContent = `${+numProblemsInput.value < problemsPerPage ? +numProblemsInput.value : problemsPerPage} problems per page`;
+    statPages.textContent = `${pages} page${pages === 1 ? "" : "s"}`;
+  }
 }
 
 function generateRandInt(min: number, max: number) {
@@ -416,12 +425,17 @@ function generatePDF(problems: Problem[]) {
   doc.save(`math-sheet${withAnswersCheckbox.checked ? "_answers" : ""}.pdf`);
 }
 
-function setURLParameters() {
+function setURLParameters(reset: Boolean = false) {
   const formData = new FormData(inputForm);
   formData.append("font-select", fontSelect.value); // TODO: add font as a saved value?
   const searchParams = new URLSearchParams(formData as any).toString();
 
-  const newURL = `${window.location.pathname}?${searchParams}`;
+  let newURL = `${window.location.pathname}`;
+
+  if (!reset) {
+    newURL += `?${searchParams}`;
+  }
+
   window.history.pushState({ path: newURL }, "", newURL);
 }
 
