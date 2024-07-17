@@ -35,6 +35,7 @@ const bgSwitcher = document.querySelector("#bg-switcher select") as HTMLSelectEl
 // --- Buttons
 const reseedButton = document.getElementById("reseed") as HTMLButtonElement;
 const pdfButton = document.getElementById("pdf-button") as HTMLButtonElement;
+const saveConfigButton = document.querySelector("#save-config") as HTMLButtonElement;
 const windowButtons = document.querySelectorAll(".title-bar-controls button");
 
 // --- Dialogs
@@ -162,9 +163,6 @@ inputForm.addEventListener("submit", (e) => {
 
   pdfButton.removeAttribute("disabled");
   page!.classList.remove("d-none");
-  page!.parentElement!.style.border = "1px solid #888";
-
-  setURLParameters();
 });
 
 inputForm.addEventListener("reset", () => {
@@ -193,6 +191,10 @@ inputForm.addEventListener("reset", () => {
 pdfButton.addEventListener("click", () => {
   if (generatedProblems.length === 0) return;
   generatePDF(generatedProblems);
+});
+
+saveConfigButton.addEventListener("click", () => {
+  setURLParameters();
 });
 
 // --- Apply
