@@ -3,7 +3,7 @@
     "target": "ES2022" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
     "useDefineForClassFields": true /* Emit ECMAScript-standard-compliant class fields. */,
     "module": "ES2022" /* Specify what module code is generated. */,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,
 
     /* Bunder mode */

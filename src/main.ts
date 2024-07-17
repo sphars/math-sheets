@@ -12,7 +12,7 @@ import { autoTable } from "jspdf-autotable";
 
 // --- Script vars
 const tileImages = import.meta.glob<{ default: string }>("./tiles/*.png", { eager: true });
-const imageUrls = Object.values(tileImages).map((module) => module.default);
+const tileImageUrls = Object.values(tileImages).map((module) => module.default);
 const operators = ["+", "-", "*", "/"];
 const fonts: Font[] = fontsData.fonts.sort((a, b) => a.name.localeCompare(b.name));
 const problemsPerPage = 24;
@@ -23,7 +23,6 @@ const page = document.getElementById("page") as HTMLDivElement;
 const pageContent = document.getElementById("page-content") as HTMLDivElement;
 const inputForm = document.getElementById("input-form") as HTMLFormElement;
 const statusPages = document.getElementById("status-pages");
-const logoArea = document.querySelector<HTMLAnchorElement>("#logo")!;
 
 // --- Inputs
 const numProblemsInput = document.getElementById("num-problems") as HTMLInputElement;
@@ -31,11 +30,10 @@ const seedInput = document.getElementById("seed") as HTMLInputElement;
 const fontSelect = document.getElementById("font-select") as HTMLSelectElement;
 const withHeaderCheckbox = document.getElementById("with-header") as HTMLInputElement;
 const withAnswersCheckbox = document.getElementById("with-answers") as HTMLInputElement;
+const bgSwitcher = document.querySelector("#bg-switcher select") as HTMLSelectElement;
 
 // --- Buttons
 const reseedButton = document.getElementById("reseed") as HTMLButtonElement;
-const formSubmitButton = document.getElementById("form-submit") as HTMLButtonElement;
-// const printButton = document.getElementById("print-button") as HTMLButtonElement;
 const pdfButton = document.getElementById("pdf-button") as HTMLButtonElement;
 const windowButtons = document.querySelectorAll(".title-bar-controls button");
 
@@ -62,6 +60,21 @@ window.addEventListener("DOMContentLoaded", (event) => {
     fontSelect.add(opt);
   });
 
+  // setup the bg switcher
+  tileImageUrls.forEach((tile) => {
+    const opt = document.createElement("option") as HTMLOptionElement;
+    opt.value = tile;
+
+    // get just the name of the file sans extension
+    const text = tile.split("/").pop()!.replace(".png", "");
+    opt.text = text;
+
+    // check if it's already selected
+    const currentTile = getBodyBackground();
+    opt.selected = currentTile.includes(tile) ? true : false;
+    bgSwitcher.add(opt);
+  });
+
   setCSSVariable(
     document.documentElement,
     "--font-mono",
@@ -84,6 +97,12 @@ fontSelect.addEventListener("change", (event) => {
     "--font-mono",
     fonts.find((font) => font.name === fontSelect.value)?.family!
   );
+});
+
+bgSwitcher.addEventListener("change", (event: Event) => {
+  const element = event.target as HTMLInputElement;
+  localStorage.setItem("bg", element.value);
+  setBodyBackground();
 });
 
 withHeaderCheckbox.addEventListener("click", showPageHeader);
@@ -210,10 +229,18 @@ function setFormValues(options: GeneratorOptions) {
   }
 }
 
+function getBodyBackground() {
+  return window.getComputedStyle(document.querySelector("body")!).backgroundImage;
+}
+
 function setBodyBackground() {
-  const randomIndex = generateRandInt(0, imageUrls.length - 1);
-  const randomImageUrl = imageUrls[randomIndex];
-  document.body.style.backgroundImage = `url(${randomImageUrl})`;
+  let url = localStorage.getItem("bg");
+  if (!url) {
+    const randomIndex = generateRandInt(0, tileImageUrls.length - 1);
+    url = tileImageUrls[randomIndex];
+  }
+
+  document.body.style.backgroundImage = `url(${url})`;
 }
 
 function setCSSVariable(element: HTMLElement, variable: string, value: string) {
