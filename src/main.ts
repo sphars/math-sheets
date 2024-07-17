@@ -1,9 +1,9 @@
 // --- Imports
 import "@fontsource-variable/roboto-flex";
+import "98.css/dist/98.css";
 import "./style.css";
-import logo from "./assets/logo.svg";
-import { Problem, GeneratorOptions, Font } from "./interfaces";
 import fontsData from "./fonts.json";
+import { Problem, GeneratorOptions, Font } from "./interfaces";
 import { SeededRNG, generateRandomSeed } from "./generator";
 
 // --- Library Imports
@@ -11,6 +11,8 @@ import { jsPDF } from "jspdf";
 import { autoTable } from "jspdf-autotable";
 
 // --- Script vars
+const tileImages = import.meta.glob<{ default: string }>("./tiles/*.png", { eager: true });
+const tileImageUrls = Object.values(tileImages).map((module) => module.default);
 const operators = ["+", "-", "*", "/"];
 const fonts: Font[] = fontsData.fonts.sort((a, b) => a.name.localeCompare(b.name));
 const problemsPerPage = 24;
@@ -20,8 +22,7 @@ let generatedProblems: Problem[] = [];
 const page = document.getElementById("page") as HTMLDivElement;
 const pageContent = document.getElementById("page-content") as HTMLDivElement;
 const inputForm = document.getElementById("input-form") as HTMLFormElement;
-const pagesNote = document.getElementById("pages");
-const logoArea = document.querySelector<HTMLAnchorElement>("#logo")!;
+const statusPages = document.getElementById("status-pages");
 
 // --- Inputs
 const numProblemsInput = document.getElementById("num-problems") as HTMLInputElement;
@@ -29,12 +30,18 @@ const seedInput = document.getElementById("seed") as HTMLInputElement;
 const fontSelect = document.getElementById("font-select") as HTMLSelectElement;
 const withHeaderCheckbox = document.getElementById("with-header") as HTMLInputElement;
 const withAnswersCheckbox = document.getElementById("with-answers") as HTMLInputElement;
+const bgSwitcher = document.querySelector("#bg-switcher select") as HTMLSelectElement;
 
 // --- Buttons
 const reseedButton = document.getElementById("reseed") as HTMLButtonElement;
-const formSubmitButton = document.getElementById("form-submit") as HTMLButtonElement;
-// const printButton = document.getElementById("print-button") as HTMLButtonElement;
 const pdfButton = document.getElementById("pdf-button") as HTMLButtonElement;
+const saveConfigButton = document.querySelector("#save-config") as HTMLButtonElement;
+const windowButtons = document.querySelectorAll(".title-bar-controls button");
+
+// --- Dialogs
+const creditsButton = document.querySelector("#credits") as HTMLButtonElement;
+const creditsDialog = document.querySelector("dialog") as HTMLDialogElement;
+const creditsDialogCloseButton = document.querySelectorAll("dialog button") as unknown as HTMLButtonElement[];
 
 // --- Event listeners
 window.addEventListener("DOMContentLoaded", (event) => {
@@ -54,12 +61,33 @@ window.addEventListener("DOMContentLoaded", (event) => {
     fontSelect.add(opt);
   });
 
+  // setup the bg switcher
+  tileImageUrls.forEach((tile: string) => {
+    const opt = document.createElement("option") as HTMLOptionElement;
+    opt.value = tile;
+
+    // get just the name of the file sans extension and hash from vite build step
+    const text = tile.split("/").pop()!.replace(".png", "").split("-")[0];
+    opt.text = text;
+
+    // check if it's already selected
+    const currentTile = getBodyBackground();
+    opt.selected = currentTile.includes(tile) ? true : false;
+    bgSwitcher.add(opt);
+  });
+
   setCSSVariable(
     document.documentElement,
     "--font-mono",
     fonts.find((font) => font.name === fontSelect.value)?.family!
   );
   updatePagesNote();
+});
+
+windowButtons.forEach((element) => {
+  element.addEventListener("click", () => {
+    console.log("Sorry, this doesn't do anything. Yet.");
+  });
 });
 
 numProblemsInput.addEventListener("change", updatePagesNote);
@@ -70,6 +98,12 @@ fontSelect.addEventListener("change", (event) => {
     "--font-mono",
     fonts.find((font) => font.name === fontSelect.value)?.family!
   );
+});
+
+bgSwitcher.addEventListener("change", (event: Event) => {
+  const element = event.target as HTMLInputElement;
+  localStorage.setItem("bg", element.value);
+  setBodyBackground();
 });
 
 withHeaderCheckbox.addEventListener("click", showPageHeader);
@@ -86,6 +120,16 @@ withAnswersCheckbox.addEventListener("click", (event: any) => {
 
 reseedButton.addEventListener("click", (e) => {
   seedInput.value = generateRandomSeed().toString();
+});
+
+creditsButton.addEventListener("click", (e) => {
+  creditsDialog.showModal();
+});
+
+creditsDialogCloseButton.forEach((button) => {
+  button.addEventListener("click", () => {
+    creditsDialog.close();
+  });
 });
 
 inputForm.addEventListener("submit", (e) => {
@@ -117,11 +161,8 @@ inputForm.addEventListener("submit", (e) => {
     fonts.find((font) => font.name === fontSelect.value)?.family!
   );
 
-  pdfButton.classList.remove("disabled");
+  pdfButton.removeAttribute("disabled");
   page!.classList.remove("d-none");
-  page!.parentElement!.style.border = "1px solid #888";
-
-  setURLParameters();
 });
 
 inputForm.addEventListener("reset", () => {
@@ -129,14 +170,14 @@ inputForm.addEventListener("reset", () => {
   generatedProblems.length = 0;
   page!.classList.add("d-none");
   page!.parentElement!.style.border = "none";
-  pdfButton.classList.add("disabled");
+  pdfButton.setAttribute("disabled", "disabled");
 
   // manually reset some values
   seedInput.defaultValue = generateRandomSeed().toString();
   seedInput.value = seedInput.defaultValue;
   numProblemsInput.value = numProblemsInput.defaultValue;
   updatePagesNote();
-  setURLParameters();
+  setURLParameters(true);
 });
 
 // printButton.addEventListener("click", () => {
@@ -150,6 +191,10 @@ inputForm.addEventListener("reset", () => {
 pdfButton.addEventListener("click", () => {
   if (generatedProblems.length === 0) return;
   generatePDF(generatedProblems);
+});
+
+saveConfigButton.addEventListener("click", () => {
+  setURLParameters();
 });
 
 // --- Apply
@@ -186,6 +231,25 @@ function setFormValues(options: GeneratorOptions) {
   }
 }
 
+function getBodyBackground() {
+  return window.getComputedStyle(document.querySelector("body")!).backgroundImage;
+}
+
+function setBodyBackground() {
+  let bgImage = "unset";
+  const storedBg = localStorage.getItem("bg");
+
+  if (!storedBg) {
+    const randomIndex = generateRandInt(0, tileImageUrls.length - 1);
+    bgImage = `url(${tileImageUrls[randomIndex]})`;
+  } else if (storedBg !== "none") {
+    bgImage = `url(${storedBg})`;
+  }
+
+  // document.body.style.backgroundImage = `url(${url})`;
+  document.body.style.backgroundImage = bgImage;
+}
+
 function setCSSVariable(element: HTMLElement, variable: string, value: string) {
   element.style.setProperty(variable, value);
 }
@@ -201,11 +265,12 @@ function showPageHeader() {
 }
 
 function updatePagesNote() {
-  const pages = getNumPages(+numProblemsInput.value);
-  if (pagesNote)
-    pagesNote.textContent =
-      `${pages} page${pages === 1 ? "" : "s"}, ` +
-      `${+numProblemsInput.value < problemsPerPage ? +numProblemsInput.value : problemsPerPage} problems per page`;
+  const numProblems = +numProblemsInput.value;
+  const pages = getNumPages(numProblems);
+  if (statusPages) {
+    let statProbs = `${numProblems < problemsPerPage ? numProblems : problemsPerPage} problems per page`;
+    statusPages.textContent = `${pages} page${pages === 1 ? "" : "s"}, ${statProbs}`;
+  }
 }
 
 function generateRandInt(min: number, max: number) {
@@ -416,12 +481,17 @@ function generatePDF(problems: Problem[]) {
   doc.save(`math-sheet${withAnswersCheckbox.checked ? "_answers" : ""}.pdf`);
 }
 
-function setURLParameters() {
+function setURLParameters(reset: Boolean = false) {
   const formData = new FormData(inputForm);
   formData.append("font-select", fontSelect.value); // TODO: add font as a saved value?
   const searchParams = new URLSearchParams(formData as any).toString();
 
-  const newURL = `${window.location.pathname}?${searchParams}`;
+  let newURL = `${window.location.pathname}`;
+
+  if (!reset) {
+    newURL += `?${searchParams}`;
+  }
+
   window.history.pushState({ path: newURL }, "", newURL);
 }
 
@@ -443,3 +513,5 @@ function getOptionsFromURL(): GeneratorOptions {
     fontSelect: params.get("font-select") || "Courier" // TODO: add font as a saved value?
   };
 }
+
+setBodyBackground();

@@ -63,6 +63,11 @@ and the output `./dist` directory can be deployed where ever you'd like. See the
 
 ## Credits
 
+### Design
+
+- [98.css](https://jdan.github.io/98.css/) for the awesome CSS library
+- [Windows Wallpaper Wiki](https://windowswallpaper.miraheze.org/wiki/Windows_95) (and Microsoft, I guess) for the Windows 98 background tiles
+
 ### Dependencies
 
 - [jsPDF](https://github.com/parallax/jsPDF) for PDF generation
