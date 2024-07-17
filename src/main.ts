@@ -22,8 +22,7 @@ let generatedProblems: Problem[] = [];
 const page = document.getElementById("page") as HTMLDivElement;
 const pageContent = document.getElementById("page-content") as HTMLDivElement;
 const inputForm = document.getElementById("input-form") as HTMLFormElement;
-const statProblems = document.getElementById("stat-problems");
-const statPages = document.getElementById("stat-pages");
+const statusPages = document.getElementById("status-pages");
 const logoArea = document.querySelector<HTMLAnchorElement>("#logo")!;
 
 // --- Inputs
@@ -232,10 +231,11 @@ function showPageHeader() {
 }
 
 function updatePagesNote() {
-  const pages = getNumPages(+numProblemsInput.value);
-  if (statProblems && statPages) {
-    statProblems.textContent = `${+numProblemsInput.value < problemsPerPage ? +numProblemsInput.value : problemsPerPage} problems per page`;
-    statPages.textContent = `${pages} page${pages === 1 ? "" : "s"}`;
+  const numProblems = +numProblemsInput.value;
+  const pages = getNumPages(numProblems);
+  if (statusPages) {
+    let statProbs = `${numProblems < problemsPerPage ? numProblems : problemsPerPage} problems per page`;
+    statusPages.textContent = `${pages} page${pages === 1 ? "" : "s"}, ${statProbs}`;
   }
 }
 
