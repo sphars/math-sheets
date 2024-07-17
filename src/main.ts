@@ -62,12 +62,12 @@ window.addEventListener("DOMContentLoaded", (event) => {
   });
 
   // setup the bg switcher
-  tileImageUrls.forEach((tile) => {
+  tileImageUrls.forEach((tile: string) => {
     const opt = document.createElement("option") as HTMLOptionElement;
     opt.value = tile;
 
-    // get just the name of the file sans extension
-    const text = tile.split("/").pop()!.replace(".png", "");
+    // get just the name of the file sans extension and hash from vite build step
+    const text = tile.split("/").pop()!.replace(".png", "").split("-")[0];
     opt.text = text;
 
     // check if it's already selected
