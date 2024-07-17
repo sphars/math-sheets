@@ -236,13 +236,18 @@ function getBodyBackground() {
 }
 
 function setBodyBackground() {
-  let url = localStorage.getItem("bg");
-  if (!url) {
+  let bgImage = "unset";
+  const storedBg = localStorage.getItem("bg");
+
+  if (!storedBg) {
     const randomIndex = generateRandInt(0, tileImageUrls.length - 1);
-    url = tileImageUrls[randomIndex];
+    bgImage = `url(${tileImageUrls[randomIndex]})`;
+  } else if (storedBg !== "none") {
+    bgImage = `url(${storedBg})`;
   }
 
-  document.body.style.backgroundImage = `url(${url})`;
+  // document.body.style.backgroundImage = `url(${url})`;
+  document.body.style.backgroundImage = bgImage;
 }
 
 function setCSSVariable(element: HTMLElement, variable: string, value: string) {

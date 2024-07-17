@@ -1,3 +1,7 @@
+:root {
+  --spacing: 12px;
+}
+
 *,
 ::before,
 ::after {
@@ -35,14 +39,14 @@ ul {
   max-width: 1000px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin: 8px;
+  gap: var(--spacing);
+  margin: var(--spacing);
 }
 
 .main-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--spacing);
 }
 
 .window {
