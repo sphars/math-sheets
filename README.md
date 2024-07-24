@@ -30,9 +30,11 @@ For generating the problems, there's several configuration options:
 
 For generating the PDFs, there's a couple options to change:
 
+- Set the font used in the generated PDF
+  - If something fails, this will fall back to using the default Courier font
 - Add the header to the first page
   - Header is simply `NAME: ________ DATE: ______`, like back in school
-- Show the answers on the page (an answer sheet)
+- Show the answers on the page (like an answer sheet)
 
 ## Status
 
@@ -41,7 +43,6 @@ It's at the MVP stage right now with basic functionality available.
 There are a couple features still in-progress:
 
 - Use alternative notations, such as the long-division notation
-- Using custom fonts in the PDF (only Courier is available in the PDF for now)
 
 See [ISSUES](https://github.com/sphars/math-sheets/issues) for details about upcoming features.
 
@@ -65,6 +66,8 @@ and the output `./dist` directory can be deployed where ever you'd like. See the
 
 ## Credits
 
+My dad, for making us kids do math during summer breaks. This was the inspiration for this project. Thanks Dad!
+
 ### Design
 
 - [98.css](https://jdan.github.io/98.css/) for the awesome CSS library
@@ -77,18 +80,14 @@ and the output `./dist` directory can be deployed where ever you'd like. See the
 
 ### Fonts
 
+- [Glyphr Studio](https://www.glyphrstudio.com/) for font editing (project file in repo root)
 - [Dotrice](https://www.1001fonts.com/dotrice-font.html) (dot matrix style font) by Paul Flo Williams, modified by me to add some additional characters:
   - Division Sign `÷`
   - Multiplication Sign `×`
-- [Courier](https://github.com/dse/font-og-courier)
-- [Noto Sans Mono](https://fonts.google.com/specimen/Noto+Sans+Mono)
 - [Chivo Mono](https://fonts.google.com/specimen/Chivo+Mono)
+- [Courier](https://github.com/dse/font-og-courier)
 - [Inconsolata](https://fonts.google.com/specimen/Inconsolata)
-- [Space Mono](https://fonts.google.com/specimen/Space+Mono)
+- [Noto Sans Mono](https://fonts.google.com/specimen/Noto+Sans+Mono)
 - [Roboto Mono](https://fonts.google.com/specimen/Roboto+Mono)
+- [Space Mono](https://fonts.google.com/specimen/Space+Mono)
 - [Roboto Flex](https://fonts.google.com/specimen/Roboto+Flex)
-
-### Other
-
-- [Glyphr Studio](https://www.glyphrstudio.com/) for font editing
-- My dad for making us kids do math during summer breaks
