@@ -55,9 +55,10 @@ window.addEventListener("DOMContentLoaded", (event) => {
   // setup the font select
   fonts.forEach((font) => {
     const opt = document.createElement("option") as HTMLOptionElement;
-    if (font.name === loadedOptions.fontSelect) opt.selected = true;
+    if (font.name === "Dotrice") opt.text = `${font.name} (Dot Matrix)`;
+    else opt.text = font.name;
     opt.value = font.name;
-    opt.text = font.name;
+    if (font.name === loadedOptions.fontSelect) opt.selected = true;
     fontSelect.add(opt);
   });
 
@@ -76,11 +77,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
     bgSwitcher.add(opt);
   });
 
-  setCSSVariable(
-    document.documentElement,
-    "--font-mono",
-    fonts.find((font) => font.name === fontSelect.value)?.family!
-  );
+  setPrintPreviewFont();
   updatePagesNote();
 });
 
@@ -92,10 +89,7 @@ windowButtons.forEach((element) => {
 
 numProblemsInput.addEventListener("change", updatePagesNote);
 
-fontSelect.addEventListener("change", () => {
-  const font = fonts.find((font) => font.name === fontSelect.value);
-  setCSSVariable(document.documentElement, "--font-monospace", font?.family!);
-});
+fontSelect.addEventListener("change", setPrintPreviewFont);
 
 bgSwitcher.addEventListener("change", (event: Event) => {
   const element = event.target as HTMLInputElement;
@@ -152,12 +146,7 @@ inputForm.addEventListener("submit", (e) => {
   generatedProblems.length = 0;
   generatedProblems = generateMathProblems(options);
   writeProblems(generatedProblems, withAnswersCheckbox.checked);
-  setCSSVariable(
-    document.documentElement,
-    "--font-monospace",
-    fonts.find((font) => font.name === fontSelect.value)?.family!
-  );
-
+  setPrintPreviewFont();
   pdfButton.removeAttribute("disabled");
   page!.classList.remove("d-none");
 });
@@ -247,8 +236,15 @@ function setBodyBackground() {
   document.body.style.backgroundImage = bgImage;
 }
 
+function setPrintPreviewFont() {
+  const font = fonts.find((font) => font.name === fontSelect.value);
+  const family = font?.family ? font.family : "monospace";
+  setCSSVariable(document.documentElement, "--font-monospace", family);
+}
+
 function setCSSVariable(element: HTMLElement, variable: string, value: string) {
   element.style.setProperty(variable, value);
+  console.log(element.style.getPropertyValue(variable));
 }
 
 function getNumPages(numProblems: number) {
@@ -417,10 +413,15 @@ async function generatePDF(problems: Problem[]) {
 
   // add custom font
   const selectedFont = fonts.find((font) => font.name === fontSelect.value);
-  const fontContent: string = await loadFontContent(`/fonts/${selectedFont?.file!}`);
-  doc.addFileToVFS(selectedFont?.file!, fontContent);
-  doc.addFont(selectedFont?.file!, selectedFont?.name!, selectedFont?.style || "normal");
-  doc.setFont(selectedFont?.name!);
+  try {
+    let fontContent: string;
+    fontContent = await loadFontContent(`/fonts/${selectedFont?.file!}`);
+    doc.addFileToVFS(selectedFont?.file!, fontContent);
+    doc.addFont(selectedFont?.file!, selectedFont?.name!, selectedFont?.style || "normal");
+    doc.setFont(selectedFont?.name!);
+  } catch (error) {
+    doc.setFont("Courier");
+  }
 
   // add header
   if (withHeaderCheckbox.checked) {
@@ -518,6 +519,9 @@ function getOptionsFromURL(): GeneratorOptions {
   };
 }
 
+/**
+ * Load font content and return as a base64 encoded string
+ */
 async function loadFontContent(path: string): Promise<string> {
   try {
     const response = await fetch(path);
