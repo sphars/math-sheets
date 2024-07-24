@@ -14,11 +14,11 @@ async function createFontCSS(fonts, filePath = "./src/fonts.css") {
 
     const cssContent = fonts
       .map((font) => {
-        if (!font.url) return;
+        if (!font.file) return;
 
         return `@font-face {
   font-family: "${font.name}";
-  src: url("${font.url}") format("${font.format}");
+  src: url("/fonts/${font.file}") format("${font.format}");
   font-weight: ${font.weight ? font.weight : "normal"};
   font-style: ${font.style ? font.style : "normal"};
 }`;

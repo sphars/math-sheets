@@ -1,11 +1,11 @@
 export interface Font {
   name: string;
   family: string;
+  file: string;
   url?: string;
   format?: string;
   weight?: string | number;
   style?: string;
-  base64?: string;
 }
 
 export interface Problem {
