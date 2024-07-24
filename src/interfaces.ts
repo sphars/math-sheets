@@ -16,9 +16,12 @@ export interface Problem {
 }
 
 export interface GeneratorOptions {
+  seed: number;
   operator: string;
-  min: number;
-  max: number;
+  leftMin: number;
+  leftMax: number;
+  rightMin: number;
+  rightMax: number;
   numProblems: number;
   descOrder: boolean;
   noNegatives: boolean;

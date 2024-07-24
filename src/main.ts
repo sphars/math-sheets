@@ -1,46 +1,79 @@
 // --- Imports
+import "@fontsource-variable/roboto-flex";
+import "98.css/dist/98.css";
 import "./style.css";
-import logo from "./assets/logo.svg";
-import { Problem, GeneratorOptions, Font } from "./interfaces";
 import fontsData from "./fonts.json";
+import { Problem, GeneratorOptions, Font } from "./interfaces";
+import { SeededRNG, generateRandomSeed } from "./generator";
 
 // --- Library Imports
-import "@fontsource-variable/roboto-flex";
 import { jsPDF } from "jspdf";
 import { autoTable } from "jspdf-autotable";
 
 // --- Script vars
+const tileImages = import.meta.glob<{ default: string }>("./tiles/*.png", { eager: true });
+const tileImageUrls = Object.values(tileImages).map((module) => module.default);
 const operators = ["+", "-", "*", "/"];
 const fonts: Font[] = fontsData.fonts.sort((a, b) => a.name.localeCompare(b.name));
-const itemsPerPage = 35;
+const problemsPerPage = 24;
 let generatedProblems: Problem[] = [];
 
 // --- Elements
 const page = document.getElementById("page") as HTMLDivElement;
 const pageContent = document.getElementById("page-content") as HTMLDivElement;
 const inputForm = document.getElementById("input-form") as HTMLFormElement;
-const pagesNote = document.getElementById("pages");
-const logoArea = document.querySelector<HTMLAnchorElement>("#logo")!;
+const statusPages = document.getElementById("status-pages");
 
 // --- Inputs
 const numProblemsInput = document.getElementById("num-problems") as HTMLInputElement;
+const seedInput = document.getElementById("seed") as HTMLInputElement;
 const fontSelect = document.getElementById("font-select") as HTMLSelectElement;
 const withHeaderCheckbox = document.getElementById("with-header") as HTMLInputElement;
 const withAnswersCheckbox = document.getElementById("with-answers") as HTMLInputElement;
+const bgSwitcher = document.querySelector("#bg-switcher select") as HTMLSelectElement;
 
 // --- Buttons
-const formSubmitButton = document.getElementById("form-submit") as HTMLButtonElement;
-// const printButton = document.getElementById("print-button") as HTMLButtonElement;
+const reseedButton = document.getElementById("reseed") as HTMLButtonElement;
 const pdfButton = document.getElementById("pdf-button") as HTMLButtonElement;
+const saveConfigButton = document.querySelector("#save-config") as HTMLButtonElement;
+const windowButtons = document.querySelectorAll(".title-bar-controls button");
+
+// --- Dialogs
+const creditsButton = document.querySelector("#credits") as HTMLButtonElement;
+const creditsDialog = document.querySelector("dialog") as HTMLDialogElement;
+const creditsDialogCloseButton = document.querySelectorAll("dialog button") as unknown as HTMLButtonElement[];
 
 // --- Event listeners
 window.addEventListener("DOMContentLoaded", (event) => {
+  numProblemsInput.defaultValue = problemsPerPage.toString();
+
+  // check if there are URL parameters
+  const loadedOptions: GeneratorOptions = getOptionsFromURL();
+  setFormValues(loadedOptions);
+
   // setup the font select
   fonts.forEach((font) => {
     const opt = document.createElement("option") as HTMLOptionElement;
-    if (font.name === "Courier") opt.selected = true;
-    (opt.value = font.name), (opt.text = font.name);
+    if (font.name !== "Courier") return; // temporarily restrict font selection
+    opt.selected = true;
+    opt.value = font.name;
+    opt.text = font.name;
     fontSelect.add(opt);
+  });
+
+  // setup the bg switcher
+  tileImageUrls.forEach((tile: string) => {
+    const opt = document.createElement("option") as HTMLOptionElement;
+    opt.value = tile;
+
+    // get just the name of the file sans extension and hash from vite build step
+    const text = tile.split("/").pop()!.replace(".png", "").split("-")[0];
+    opt.text = text;
+
+    // check if it's already selected
+    const currentTile = getBodyBackground();
+    opt.selected = currentTile.includes(tile) ? true : false;
+    bgSwitcher.add(opt);
   });
 
   setCSSVariable(
@@ -51,9 +84,13 @@ window.addEventListener("DOMContentLoaded", (event) => {
   updatePagesNote();
 });
 
-numProblemsInput.addEventListener("change", (event) => {
-  updatePagesNote();
+windowButtons.forEach((element) => {
+  element.addEventListener("click", () => {
+    console.log("Sorry, this doesn't do anything. Yet.");
+  });
 });
+
+numProblemsInput.addEventListener("change", updatePagesNote);
 
 fontSelect.addEventListener("change", (event) => {
   setCSSVariable(
@@ -61,6 +98,12 @@ fontSelect.addEventListener("change", (event) => {
     "--font-mono",
     fonts.find((font) => font.name === fontSelect.value)?.family!
   );
+});
+
+bgSwitcher.addEventListener("change", (event: Event) => {
+  const element = event.target as HTMLInputElement;
+  localStorage.setItem("bg", element.value);
+  setBodyBackground();
 });
 
 withHeaderCheckbox.addEventListener("click", showPageHeader);
@@ -75,14 +118,31 @@ withAnswersCheckbox.addEventListener("click", (event: any) => {
   }
 });
 
+reseedButton.addEventListener("click", (e) => {
+  seedInput.value = generateRandomSeed().toString();
+});
+
+creditsButton.addEventListener("click", (e) => {
+  creditsDialog.showModal();
+});
+
+creditsDialogCloseButton.forEach((button) => {
+  button.addEventListener("click", () => {
+    creditsDialog.close();
+  });
+});
+
 inputForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const inputData = new FormData(inputForm);
 
   const options: GeneratorOptions = {
+    seed: inputData.get("seed") as unknown as number, // TODO: generate a new seed if not present
     operator: inputData.get("operator") as string,
-    min: inputData.get("min-input") as unknown as number,
-    max: inputData.get("max-input") as unknown as number,
+    leftMin: inputData.get("left-min") as unknown as number,
+    leftMax: inputData.get("left-max") as unknown as number,
+    rightMin: inputData.get("right-min") as unknown as number,
+    rightMax: inputData.get("right-max") as unknown as number,
     numProblems: inputData.get("num-problems") as unknown as number,
     descOrder: inputData.get("desc-order") as unknown as boolean,
     noNegatives: inputData.get("no-negatives") as unknown as boolean,
@@ -101,9 +161,23 @@ inputForm.addEventListener("submit", (e) => {
     fonts.find((font) => font.name === fontSelect.value)?.family!
   );
 
-  pdfButton.classList.remove("disabled");
+  pdfButton.removeAttribute("disabled");
   page!.classList.remove("d-none");
-  page!.parentElement!.style.border = "1px solid #888";
+});
+
+inputForm.addEventListener("reset", () => {
+  // clear out the generated problems
+  generatedProblems.length = 0;
+  page!.classList.add("d-none");
+  page!.parentElement!.style.border = "none";
+  pdfButton.setAttribute("disabled", "disabled");
+
+  // manually reset some values
+  seedInput.defaultValue = generateRandomSeed().toString();
+  seedInput.value = seedInput.defaultValue;
+  numProblemsInput.value = numProblemsInput.defaultValue;
+  updatePagesNote();
+  setURLParameters(true);
 });
 
 // printButton.addEventListener("click", () => {
@@ -119,16 +193,69 @@ pdfButton.addEventListener("click", () => {
   generatePDF(generatedProblems);
 });
 
+saveConfigButton.addEventListener("click", () => {
+  setURLParameters();
+});
+
 // --- Apply
 // logoArea.innerHTML = `<img src="${logo}" class="logo" alt="Math Sheets logo" />`;
 
 // --- Functions
+function setFormValues(options: GeneratorOptions) {
+  for (const [key, value] of Object.entries(options)) {
+    // simple map of GeneratorOption key to form name
+    const inputName =
+      {
+        leftMin: "left-min",
+        leftMax: "left-max",
+        rightMin: "right-min",
+        rightMax: "right-max",
+        numProblems: "num-problems",
+        descOrder: "desc-order",
+        noNegatives: "no-negatives",
+        intsOnly: "ints-only",
+        fontSelect: "font-select"
+      }[key] || key;
+
+    const formElement = inputForm.elements.namedItem(inputName) as HTMLInputElement;
+    if (formElement) {
+      switch (formElement.type) {
+        case "checkbox":
+          formElement.checked = value;
+          break;
+        default:
+          formElement.value = value;
+          break;
+      }
+    }
+  }
+}
+
+function getBodyBackground() {
+  return window.getComputedStyle(document.querySelector("body")!).backgroundImage;
+}
+
+function setBodyBackground() {
+  let bgImage = "unset";
+  const storedBg = localStorage.getItem("bg");
+
+  if (!storedBg) {
+    const randomIndex = generateRandInt(0, tileImageUrls.length - 1);
+    bgImage = `url(${tileImageUrls[randomIndex]})`;
+  } else if (storedBg !== "none") {
+    bgImage = `url(${storedBg})`;
+  }
+
+  // document.body.style.backgroundImage = `url(${url})`;
+  document.body.style.backgroundImage = bgImage;
+}
+
 function setCSSVariable(element: HTMLElement, variable: string, value: string) {
   element.style.setProperty(variable, value);
 }
 
 function getNumPages(numProblems: number) {
-  return Math.ceil((numProblems - itemsPerPage) / itemsPerPage) + 1;
+  return Math.ceil((numProblems - problemsPerPage) / problemsPerPage) + 1;
 }
 
 function showPageHeader() {
@@ -138,11 +265,12 @@ function showPageHeader() {
 }
 
 function updatePagesNote() {
-  const pages = getNumPages(+numProblemsInput.value);
-  if (pagesNote)
-    pagesNote.textContent =
-      `${pages} page${pages === 1 ? "" : "s"}, ` +
-      `${+numProblemsInput.value < itemsPerPage ? +numProblemsInput.value : itemsPerPage} problems per page`;
+  const numProblems = +numProblemsInput.value;
+  const pages = getNumPages(numProblems);
+  if (statusPages) {
+    let statProbs = `${numProblems < problemsPerPage ? numProblems : problemsPerPage} problems per page`;
+    statusPages.textContent = `${pages} page${pages === 1 ? "" : "s"}, ${statProbs}`;
+  }
 }
 
 function generateRandInt(min: number, max: number) {
@@ -175,9 +303,9 @@ function getAnswer(left: number, right: number, operator: string) {
   return answer;
 }
 
-function getOperands(options: GeneratorOptions) {
-  const leftOperand = generateRandInt(options.min, options.max);
-  const rightOperand = generateRandInt(options.min, options.max);
+function getOperands(options: GeneratorOptions, rng: SeededRNG) {
+  const leftOperand = rng.nextInt(options.leftMin, options.leftMax);
+  const rightOperand = rng.nextInt(options.rightMin, options.rightMax);
 
   let operands = [leftOperand, rightOperand];
 
@@ -188,26 +316,28 @@ function getOperands(options: GeneratorOptions) {
 
   // avoid divide by zero
   if (options.operator === "/" && operands[1] === 0) {
-    operands[1] = generateRandInt(1, options.max);
+    operands[1] = rng.nextInt(1, options.rightMax);
   }
 
   return operands;
 }
 
-function generateMathProblems(options: GeneratorOptions) {
+function generateMathProblems(options: GeneratorOptions): Problem[] {
+  const rng = new SeededRNG(options.seed);
+
   for (let i = 0; i < options.numProblems; i++) {
     // copy the form options
     const optionsCopy = JSON.parse(JSON.stringify(options)) as GeneratorOptions;
 
     // if operator = mix, need to randomize which operator to use
-    optionsCopy.operator = options.operator === "mix" ? operators[generateRandInt(0, 3)] : options.operator;
+    optionsCopy.operator = options.operator === "mix" ? operators[rng.nextInt(0, 3)] : options.operator;
 
-    let operands = getOperands(optionsCopy);
+    let operands = getOperands(optionsCopy, rng);
     let answer = getAnswer(operands[0], operands[1], optionsCopy.operator);
 
     if (options.intsOnly) {
       do {
-        operands = getOperands(options);
+        operands = getOperands(options, rng);
         answer = getAnswer(operands[0], operands[1], optionsCopy.operator);
       } while (!Number.isInteger(answer));
     }
@@ -224,7 +354,7 @@ function generateMathProblems(options: GeneratorOptions) {
 }
 
 function writeProblems(problems: Problem[], withAnswer: boolean = false) {
-  const problemGroups = chunkArray(problems, itemsPerPage); // chunk into groups of 35 (one page)
+  const problemGroups = chunkArray(problems, problemsPerPage); // chunk into groups of {{problemsPerPage}}
 
   const mathProblemNodes = problemGroups.map((group) => {
     const gridItems = group
@@ -272,7 +402,7 @@ function writeSingleProblem(problem: Problem, withAnswer: boolean = false) {
     line2 = `${operatorChar}${" ".repeat(spaceToAdd)}${problem.right}`;
   }
 
-  const line3 = "-".repeat(Math.max(line1.length, line2.length));
+  const line3 = "—".repeat(Math.max(line1.length, line2.length));
 
   if (!withAnswer) {
     return `${line1}\n${line2}\n${line3}`;
@@ -297,7 +427,7 @@ function generatePDF(problems: Problem[]) {
   doc.setFont("Courier");
   doc.setFontSize(16);
 
-  const columns = ["", "", "", "", ""];
+  const columns = ["", "", "", ""];
   let data: string[] = [];
 
   // prepare table data
@@ -306,37 +436,36 @@ function generatePDF(problems: Problem[]) {
     data.push(formattedProblem);
   });
 
-  while (data.length < 5) {
-    // "pad" the data so that a miniumum of 5 columns is met
+  while (data.length < columns.length) {
+    // "pad" the data so that a miniumum number of columns is met
     data.push("");
   }
 
-  const chunkedData = chunkArray(data, 5);
+  const chunkedData = chunkArray(data, columns.length);
 
   doc.setFont("courier");
   autoTable(doc, {
     body: chunkedData,
     columnStyles: {
-      0: { halign: "right", cellPadding: { right: 10 } },
-      1: { halign: "right", cellPadding: { right: 10 } },
-      2: { halign: "right", cellPadding: { right: 10 } },
-      3: { halign: "right", cellPadding: { right: 10 } },
-      4: { halign: "right", cellPadding: { right: 10 } }
+      0: { halign: "right", cellPadding: { right: 12 } },
+      1: { halign: "right", cellPadding: { right: 12 } },
+      2: { halign: "right", cellPadding: { right: 12 } },
+      3: { halign: "right", cellPadding: { right: 12 } }
     },
     styles: {
       halign: "center",
       valign: "middle",
       font: "Courier",
       fontSize: 16,
-      minCellHeight: 36,
-      minCellWidth: 26,
+      minCellHeight: 40,
+      minCellWidth: 28,
       textColor: "black"
     },
     theme: "plain",
-    margin: { horizontal: 16, vertical: 22 },
+    margin: { vertical: 28, horizontal: 16 },
     didDrawPage: (data) => {
       // footer
-      let footer = `Created with Math Sheets - mathsheets.net`;
+      let footer = `Created with mathsheets.net`;
       const pageSize = doc.internal.pageSize;
       const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
       const pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth();
@@ -351,3 +480,38 @@ function generatePDF(problems: Problem[]) {
 
   doc.save(`math-sheet${withAnswersCheckbox.checked ? "_answers" : ""}.pdf`);
 }
+
+function setURLParameters(reset: Boolean = false) {
+  const formData = new FormData(inputForm);
+  formData.append("font-select", fontSelect.value); // TODO: add font as a saved value?
+  const searchParams = new URLSearchParams(formData as any).toString();
+
+  let newURL = `${window.location.pathname}`;
+
+  if (!reset) {
+    newURL += `?${searchParams}`;
+  }
+
+  window.history.pushState({ path: newURL }, "", newURL);
+}
+
+function getOptionsFromURL(): GeneratorOptions {
+  const params = new URLSearchParams(window.location.search);
+
+  // return a GeneratorOptions object with either the values from the params or default values
+  return {
+    seed: parseInt(params.get("seed") || generateRandomSeed().toString(), 10),
+    operator: params.get("operator") || "+",
+    leftMin: parseInt(params.get("left-min") || "0"),
+    leftMax: parseInt(params.get("lef-max") || "100"),
+    rightMin: parseInt(params.get("right-min") || "0"),
+    rightMax: parseInt(params.get("right-max") || "100"),
+    numProblems: parseInt(params.get("num-problems") || problemsPerPage.toString(), 10),
+    descOrder: params.get("desc-order") ? params.get("desc-order") === "on" : false,
+    noNegatives: params.get("no-negatives") ? params.get("no-negatives") === "on" : false,
+    intsOnly: params.get("ints-only") ? params.get("ints-only") === "on" : false,
+    fontSelect: params.get("font-select") || "Courier" // TODO: add font as a saved value?
+  };
+}
+
+setBodyBackground();

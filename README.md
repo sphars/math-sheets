@@ -1,45 +1,49 @@
 # Math Sheets
 
-Generate simple math worksheets in the browser for printing or whatever.
+Generate PDF worksheets of simple math problems in the browser.
 
 Inspired by the worksheets my dad printed off for my siblings and I during the summer breaks. I'm recreating this purely by memory; all I remember is that it was a grid of math problems, printed on a dot matrix printer. Not sure what he created his sheets in (likely QBasic or VisualBasic as this was late 1990s), so my attempt is to recreate this as close as possible, using modern web technologies.
 
-Built with HTML, CSS and Typescript and Vite in (more than) a few hours. I'm also using this as an exercise to learn newer web technologies (like TS and Vite).
+Built with HTML, CSS and Typescript and Vite in (more than) a few hours. I'm also using this as an exercise to learn newer web technologies (like TS and Vite). Is this overkill? Yes. Was it worth it? TBD (but likely yes).
 
 ## Features
 
 For generating the problems, there's several configuration options:
 
-- Choose from the 4 operators to generate problems for (using a mix is WIP)
+- Choose from the 4 operators to generate problems for, or use a mix of operators
 - Set the min/max operand values (0-1000 inclusive, may adjust)
+  - The two operand min/max values can be set independently
   - For division problems, the second operand is regenerated if it's 0 to avoid divide by zero problems
 - Set the number of problems to generate
-  - Currently I'm creating the PDF so that it fits 35 problems (5x7) per page, which may change
+  - Currently I'm creating the PDF so that it fits 24 problems (4x6) per page, which may change
 - Set the operand order (highest or lowest first)
-- Don't have negative answers, which overrides operand order to highest first (helpful with subtraction problems)
-- Make answers be integers only (for division problems)
-  - If unselected, then answers are rounded to 3 decimal places
-- (WIP) Change the division notation to long division
+- Option to not have negative answers, which overrides operand order to highest first (helpful with subtraction problems)
+- Option to make answers be integers only (for division problems)
+  - If unselected, then answers are rounded to 3 decimal places where needed
+- Configuration options and resulting problems can be saved by using the same URL
+  - When the problems are generated, you can click the `Save Config` button to rewrite the current URL with parameters that specify which options are set and their respective values
+  - When returning to the site with the same URL, the problems generated will be the same, handled by the `seed` value in the form. A different seed will generate different problems
+- Throwback wallpaper! 
+  - Wallpaper is randomly chosen on first visit and reloads
+  - The Select menu below the windows can change the background, saving the choice in localStorage for future visits
+
 
 For generating the PDFs, there's a couple options to change:
 
-- (WIP) Set the font to one of several monospace fonts (see below)
 - Add the header to the first page
   - Header is simply `NAME: ________ DATE: ______`, like back in school
 - Show the answers on the page (an answer sheet)
 
 ## Status
 
-It's at the MVP stage right now, with all basic functionality available.
+It's at the MVP stage right now with basic functionality available.
 
 There are a couple features still in-progress:
 
 - Use alternative notations, such as the long-division notation
-- Better styling
-- Saving config via URL parameters
 - Using custom fonts in the PDF (only Courier is available in the PDF for now)
 
-See [ISSUES](https://github.com/sphars/math-sheets/issues) for more details.
+See [ISSUES](https://github.com/sphars/math-sheets/issues) for details about upcoming features.
 
 ## Development
 
@@ -60,6 +64,11 @@ npm run build
 and the output `./dist` directory can be deployed where ever you'd like. See the `.github/workflows/deploy.yml` file for an example GitHub pages deployment.
 
 ## Credits
+
+### Design
+
+- [98.css](https://jdan.github.io/98.css/) for the awesome CSS library
+- [Windows Wallpaper Wiki](https://windowswallpaper.miraheze.org/wiki/Windows_95) (and Microsoft, I guess) for the Windows 98 background tiles
 
 ### Dependencies
 
