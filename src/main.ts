@@ -244,7 +244,6 @@ function setPrintPreviewFont() {
 
 function setCSSVariable(element: HTMLElement, variable: string, value: string) {
   element.style.setProperty(variable, value);
-  console.log(element.style.getPropertyValue(variable));
 }
 
 function getNumPages(numProblems: number) {
