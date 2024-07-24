@@ -459,14 +459,14 @@ async function generatePDF(problems: Problem[]) {
     styles: {
       halign: "center",
       valign: "middle",
-      font: selectedFont?.name!,
-      fontSize: 16,
       minCellHeight: 46,
       minCellWidth: 28,
+      font: doc.getFont().fontName,
+      fontSize: 16,
       textColor: "black"
     },
-    theme: "plain",
-    margin: { vertical: 20, horizontal: 16 },
+    theme: "plain", // no grid lines
+    margin: { vertical: 22, horizontal: 16 },
     didDrawPage: (data) => {
       // footer
       let footer = `Created with mathsheets.net`;
