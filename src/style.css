@@ -1,5 +1,6 @@
 :root {
   --spacing: 12px;
+  --font-monospace: monospace;
 }
 
 *,
@@ -108,7 +109,8 @@ form {
   letter-spacing: 2px;
   font-variant-numeric: tabular-nums; /* does this do anything? */
   text-align: right;
-  font-family: monospace;
+  font-family: var(--font-monospace);
+  font-size: 14px;
   line-height: 20px;
 
   /* override 98.css rules */
@@ -123,7 +125,8 @@ form {
   align-items: center;
   column-gap: 16px;
   margin-bottom: 2rem;
-  font-family: var(--font-sans-var);
+  font-family: var(--font-monospace);
+  font-size: 16px;
   letter-spacing: 2px;
 }
 
@@ -131,7 +134,7 @@ form {
   /* grid calculations from https://css-tricks.com/an-auto-filling-css-grid-with-max-columns/ */
   --grid-layout-gap: 16px;
   --grid-column-count: 5;
-  --grid-item--min-width: 120px;
+  --grid-item--min-width: 100px;
 
   --gap-count: calc(var(--grid-column-count) - 1);
   --total-gap-width: calc(var(--gap-count) * var(--grid-layout-gap));

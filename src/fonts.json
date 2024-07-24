@@ -3,43 +3,43 @@
     {
       "name": "Courier",
       "family": "Courier, monospace",
-      "url": "/fonts/Courier.ttf",
+      "file": "Courier.ttf",
       "format": "truetype"
     },
     {
       "name": "Noto Sans Mono",
       "family": "'Noto Sans Mono', monospace",
-      "url": "/fonts/NotoSansMono-Regular.ttf",
+      "file": "NotoSansMono-Regular.ttf",
       "format": "truetype"
     },
     {
       "name": "Dotrice",
       "family": "Dotrice, monospace",
-      "url": "/fonts/Dotrice-Regular.ttf",
+      "file": "Dotrice-Regular.ttf",
       "format": "truetype"
     },
     {
       "name": "Roboto Mono",
       "family": "'Roboto Mono', monospace",
-      "url": "/fonts/RobotoMono-Regular.ttf",
+      "file": "RobotoMono-Regular.ttf",
       "format": "truetype"
     },
     {
       "name": "Chivo Mono",
       "family": "'Chivo Mono', monospace",
-      "url": "/fonts/ChivoMono-Regular.ttf",
+      "file": "ChivoMono-Regular.ttf",
       "format": "truetype"
     },
     {
       "name": "Inconsolata",
       "family": "Inconsolata, monospace",
-      "url": "/fonts/Inconsolata-Regular.ttf",
+      "file": "Inconsolata-Regular.ttf",
       "format": "truetype"
     },
     {
       "name": "Space Mono",
       "family": "'Space Mono', monospace",
-      "url": "/fonts/SpaceMono-Regular.ttf",
+      "file": "SpaceMono-Regular.ttf",
       "format": "truetype"
     }
   ]

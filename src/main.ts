@@ -2,6 +2,7 @@
 import "@fontsource-variable/roboto-flex";
 import "98.css/dist/98.css";
 import "./style.css";
+import "./fonts.css";
 import fontsData from "./fonts.json";
 import { Problem, GeneratorOptions, Font } from "./interfaces";
 import { SeededRNG, generateRandomSeed } from "./generator";
@@ -15,7 +16,7 @@ const tileImages = import.meta.glob<{ default: string }>("./tiles/*.png", { eage
 const tileImageUrls = Object.values(tileImages).map((module) => module.default);
 const operators = ["+", "-", "*", "/"];
 const fonts: Font[] = fontsData.fonts.sort((a, b) => a.name.localeCompare(b.name));
-const problemsPerPage = 24;
+const problemsPerPage = 20;
 let generatedProblems: Problem[] = [];
 
 // --- Elements
@@ -54,10 +55,10 @@ window.addEventListener("DOMContentLoaded", (event) => {
   // setup the font select
   fonts.forEach((font) => {
     const opt = document.createElement("option") as HTMLOptionElement;
-    if (font.name !== "Courier") return; // temporarily restrict font selection
-    opt.selected = true;
+    if (font.name === "Dotrice") opt.text = `${font.name} (Dot Matrix)`;
+    else opt.text = font.name;
     opt.value = font.name;
-    opt.text = font.name;
+    if (font.name === loadedOptions.fontSelect) opt.selected = true;
     fontSelect.add(opt);
   });
 
@@ -76,11 +77,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
     bgSwitcher.add(opt);
   });
 
-  setCSSVariable(
-    document.documentElement,
-    "--font-mono",
-    fonts.find((font) => font.name === fontSelect.value)?.family!
-  );
+  setPrintPreviewFont();
   updatePagesNote();
 });
 
@@ -92,13 +89,7 @@ windowButtons.forEach((element) => {
 
 numProblemsInput.addEventListener("change", updatePagesNote);
 
-fontSelect.addEventListener("change", (event) => {
-  setCSSVariable(
-    document.documentElement,
-    "--font-mono",
-    fonts.find((font) => font.name === fontSelect.value)?.family!
-  );
-});
+fontSelect.addEventListener("change", setPrintPreviewFont);
 
 bgSwitcher.addEventListener("change", (event: Event) => {
   const element = event.target as HTMLInputElement;
@@ -155,12 +146,7 @@ inputForm.addEventListener("submit", (e) => {
   generatedProblems.length = 0;
   generatedProblems = generateMathProblems(options);
   writeProblems(generatedProblems, withAnswersCheckbox.checked);
-  setCSSVariable(
-    document.documentElement,
-    "--font-mono",
-    fonts.find((font) => font.name === fontSelect.value)?.family!
-  );
-
+  setPrintPreviewFont();
   pdfButton.removeAttribute("disabled");
   page!.classList.remove("d-none");
 });
@@ -248,6 +234,12 @@ function setBodyBackground() {
 
   // document.body.style.backgroundImage = `url(${url})`;
   document.body.style.backgroundImage = bgImage;
+}
+
+function setPrintPreviewFont() {
+  const font = fonts.find((font) => font.name === fontSelect.value);
+  const family = font?.family ? font.family : "monospace";
+  setCSSVariable(document.documentElement, "--font-monospace", family);
 }
 
 function setCSSVariable(element: HTMLElement, variable: string, value: string) {
@@ -402,7 +394,7 @@ function writeSingleProblem(problem: Problem, withAnswer: boolean = false) {
     line2 = `${operatorChar}${" ".repeat(spaceToAdd)}${problem.right}`;
   }
 
-  const line3 = "—".repeat(Math.max(line1.length, line2.length));
+  const line3 = "-".repeat(Math.max(line1.length, line2.length));
 
   if (!withAnswer) {
     return `${line1}\n${line2}\n${line3}`;
@@ -411,20 +403,32 @@ function writeSingleProblem(problem: Problem, withAnswer: boolean = false) {
   }
 }
 
-function generatePDF(problems: Problem[]) {
-  const doc = new jsPDF();
+async function generatePDF(problems: Problem[]) {
+  // create a US letter PDF
+  const doc = new jsPDF({
+    orientation: "portrait",
+    format: "letter"
+  });
+
+  // add custom font
+  const selectedFont = fonts.find((font) => font.name === fontSelect.value);
+  try {
+    let fontContent: string;
+    fontContent = await loadFontContent(`/fonts/${selectedFont?.file!}`);
+    doc.addFileToVFS(selectedFont?.file!, fontContent);
+    doc.addFont(selectedFont?.file!, selectedFont?.name!, selectedFont?.style || "normal");
+    doc.setFont(selectedFont?.name!);
+  } catch (error) {
+    doc.setFont("Courier");
+  }
 
   // add header
   if (withHeaderCheckbox.checked) {
-    doc.setFont("Helvetica");
     doc.setFontSize(14);
-    doc.text("Name: __________________", 8, 14, { align: "left" });
-    doc.text("Date: ______________", doc.internal.pageSize.getWidth() - 8, 14, { align: "right" });
+    doc.text("Name: __________________", 10, 14, { align: "left" });
+    doc.text("Date: ______________", doc.internal.pageSize.getWidth() - 10, 14, { align: "right" });
   }
 
-  // TODO: create new fonts
-  // note that chrome's internal PDF viewer doesn't render the correct Courier font...
-  doc.setFont("Courier");
   doc.setFontSize(16);
 
   const columns = ["", "", "", ""];
@@ -443,7 +447,7 @@ function generatePDF(problems: Problem[]) {
 
   const chunkedData = chunkArray(data, columns.length);
 
-  doc.setFont("courier");
+  // create the table
   autoTable(doc, {
     body: chunkedData,
     columnStyles: {
@@ -455,14 +459,14 @@ function generatePDF(problems: Problem[]) {
     styles: {
       halign: "center",
       valign: "middle",
-      font: "Courier",
+      font: selectedFont?.name!,
       fontSize: 16,
-      minCellHeight: 40,
+      minCellHeight: 46,
       minCellWidth: 28,
       textColor: "black"
     },
     theme: "plain",
-    margin: { vertical: 28, horizontal: 16 },
+    margin: { vertical: 20, horizontal: 16 },
     didDrawPage: (data) => {
       // footer
       let footer = `Created with mathsheets.net`;
@@ -471,7 +475,7 @@ function generatePDF(problems: Problem[]) {
       const pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth();
       doc.setFontSize(9);
       doc.setFont("Helvetica");
-      doc.textWithLink(footer, 10, pageHeight - 8, { url: "https://www.mathsheets.net" });
+      doc.textWithLink(footer, 12, pageHeight - 8, { url: "https://www.mathsheets.net" });
 
       const pageNum = doc.getNumberOfPages().toString();
       doc.text(pageNum, pageWidth - 8, pageHeight - 8, { align: "right" });
@@ -510,8 +514,26 @@ function getOptionsFromURL(): GeneratorOptions {
     descOrder: params.get("desc-order") ? params.get("desc-order") === "on" : false,
     noNegatives: params.get("no-negatives") ? params.get("no-negatives") === "on" : false,
     intsOnly: params.get("ints-only") ? params.get("ints-only") === "on" : false,
-    fontSelect: params.get("font-select") || "Courier" // TODO: add font as a saved value?
+    fontSelect: params.get("font-select") || "Courier"
   };
+}
+
+/**
+ * Load font content and return as a base64 encoded string
+ */
+async function loadFontContent(path: string): Promise<string> {
+  try {
+    const response = await fetch(path);
+    if (!response.ok) {
+      throw new Error(`status: ${response.status}`);
+    }
+    const fontBuffer = await response.arrayBuffer();
+    const base64font = btoa(new Uint8Array(fontBuffer).reduce((data, byte) => data + String.fromCharCode(byte), ""));
+    return base64font;
+  } catch (error) {
+    console.error("Error loading font file: ", error);
+    throw error;
+  }
 }
 
 setBodyBackground();
