@@ -5,10 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Math Sheets</title>
 
-    <meta
-      name="description"
-      content="Generate simple math worksheets in the browser and print using a generated PDF file."
-    />
+    <meta name="description" content="Generate PDF worksheets of simple math problems in the browser." />
     <link rel="canonical" href="https://www.mathsheets.net" />
 
     <!-- Open Graph meta -->
@@ -26,8 +23,8 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="manifest" href="/site.webmanifest" />
-    <script type="module" crossorigin src="/assets/index-sXBU0Kcx.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-BkqVY9oB.css">
+    <script type="module" crossorigin src="/assets/index-ysvikOZx.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-xh4209bZ.css">
   </head>
   <body>
     <div class="container">
@@ -215,14 +212,12 @@
           <div class="window-body spaced">
             <p>
               Due to differences in HTML vs PDF rendering, the PDF will not look quite the same as what you see below.
-              But you get the gist of it.
+              But it'll be pretty close.
             </p>
             <div class="fields">
               <div class="field-row">
                 <label for="font-select">Font</label>
-                <select name="font-select" id="font-select" disabled>
-                  <option value="courier">Courier</option>
-                </select>
+                <select name="font-select" id="font-select"></select>
               </div>
               <div class="field-row">
                 <input type="checkbox" name="with-header" id="with-header" />
@@ -242,7 +237,7 @@
                   <div>Date: <span class="line-bottom"></span></div>
                 </div>
                 <div id="page-content"></div>
-                <div id="page-footer">Created with <a href="https://www.mathsheets.net">Math Sheets</a></div>
+                <div id="page-footer">Created with mathsheets.net</div>
               </div>
             </div>
 
@@ -256,10 +251,18 @@
           </div>
         </div>
       </div>
-      <div id="bg-switcher">
-        <select title="Switch the background tiles">
-          <option value="none">none</option>
-        </select>
+      <div class="window" id="bg-switcher">
+        <div class="title-bar">
+          <div class="title-bar-text">Background</div>
+          <div class="title-bar-controls">
+            <button aria-label="Help"></button>
+          </div>
+        </div>
+        <div class="window-body">
+          <select title="Switch the background tiles">
+            <option value="none">none</option>
+          </select>
+        </div>
       </div>
     </div>
 
