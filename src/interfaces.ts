@@ -26,5 +26,6 @@ export interface GeneratorOptions {
   descOrder: boolean;
   noNegatives: boolean;
   intsOnly: boolean;
+  longDivNotation: boolean;
   fontSelect: string;
 }

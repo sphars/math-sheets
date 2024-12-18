@@ -138,6 +138,7 @@ inputForm.addEventListener("submit", (e) => {
     descOrder: inputData.get("desc-order") as unknown as boolean,
     noNegatives: inputData.get("no-negatives") as unknown as boolean,
     intsOnly: inputData.get("ints-only") as unknown as boolean,
+    longDivNotation: inputData.get("long-div-notation") as unknown as boolean,
     fontSelect: inputData.get("font-select") as string
   };
 
@@ -345,13 +346,13 @@ function generateMathProblems(options: GeneratorOptions): Problem[] {
   return generatedProblems;
 }
 
-function writeProblems(problems: Problem[], withAnswer: boolean = false) {
+function writeProblems(problems: Problem[], withAnswer: boolean = false, longDivNotation: boolean = false) {
   const problemGroups = chunkArray(problems, problemsPerPage); // chunk into groups of {{problemsPerPage}}
 
   const mathProblemNodes = problemGroups.map((group) => {
     const gridItems = group
       .map((problem) => {
-        const probStr = writeSingleProblem(problem); // don't get the answer here, it'll be added separately
+        const probStr = writeSingleProblem(problem, false, longDivNotation); // don't get the answer here, it'll be added separately
 
         return `
         <div class="grid-item">
@@ -379,7 +380,7 @@ function chunkArray<T>(array: T[], size: number): T[][] {
   return chunks;
 }
 
-function writeSingleProblem(problem: Problem, withAnswer: boolean = false) {
+function writeSingleProblem(problem: Problem, withAnswer: boolean = false, longDivNotation: boolean = false) {
   // write the individual lines of the problem, with padding as needed
   const operatorChar =
     {
@@ -401,6 +402,15 @@ function writeSingleProblem(problem: Problem, withAnswer: boolean = false) {
   } else {
     return `${line1}\n${line2}\n${line3}\n${problem.answer}`;
   }
+}
+
+function writeLongDivision(problem: Problem, withAnswer: boolean = false) {
+  // EXAMPLE
+  //
+  //     ┌─────
+  //   8 │ 256
+  //
+  //
 }
 
 async function generatePDF(problems: Problem[]) {
@@ -514,6 +524,7 @@ function getOptionsFromURL(): GeneratorOptions {
     descOrder: params.get("desc-order") ? params.get("desc-order") === "on" : false,
     noNegatives: params.get("no-negatives") ? params.get("no-negatives") === "on" : false,
     intsOnly: params.get("ints-only") ? params.get("ints-only") === "on" : false,
+    longDivNotation: params.get("long-div-notation") ? params.get("long-div-notation") === "on" : false,
     fontSelect: params.get("font-select") || "Courier"
   };
 }
