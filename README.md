@@ -18,6 +18,7 @@ For generating the problems, there's several configuration options:
   - Currently I'm creating the PDF so that it fits 24 problems (4x6) per page, which may change
 - Set the operand order (highest or lowest first)
 - Option to not have negative answers, which overrides operand order to highest first (helpful with subtraction problems)
+- Option to use long division notation in displaying problems
 - Option to make answers be integers only (for division problems)
   - If unselected, then answers are rounded to 3 decimal places where needed
 - Configuration options and resulting problems can be saved by using the same URL
@@ -42,7 +43,7 @@ It's at the MVP stage right now with basic functionality available.
 
 There are a couple features still in-progress:
 
-- Use alternative notations, such as the long-division notation
+- Allow multiple operators, instead of one or all
 
 See [ISSUES](https://github.com/sphars/math-sheets/issues) for details about upcoming features.
 
