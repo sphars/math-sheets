@@ -103,53 +103,62 @@
                 <legend>Operand Values</legend>
 
                 <fieldset>
-                  <legend>Left</legend>
+                  <legend>Upper/Dividend</legend>
                   <div class="field-row">
-                    <label for="left-min">Minimum</label>
-                    <input required type="number" id="left-min" name="left-min" min="0" max="999" step="1" value="0" />
-                  </div>
-                  <div class="field-row">
-                    <label for="left-max">Maximum</label>
+                    <label for="upper-min">Minimum</label>
                     <input
                       required
                       type="number"
-                      id="left-max"
-                      name="left-max"
+                      id="upper-min"
+                      name="upper-min"
+                      min="0"
+                      max="999"
+                      step="1"
+                      value="1"
+                    />
+                  </div>
+                  <div class="field-row">
+                    <label for="upper-max">Maximum</label>
+                    <input
+                      required
+                      type="number"
+                      id="upper-max"
+                      name="upper-max"
                       min="0"
                       max="1000"
                       step="1"
-                      value="100"
+                      value="10"
                     />
                   </div>
                 </fieldset>
 
                 <fieldset>
-                  <legend>Right</legend>
+                  <legend>Lower/Divisor</legend>
                   <div class="field-row">
-                    <label for="right-min">Minimum</label>
+                    <label for="lower-min">Minimum</label>
                     <input
                       required
                       type="number"
-                      id="right-min"
-                      name="right-min"
+                      id="lower-min"
+                      name="lower-min"
                       min="0"
                       max="999"
                       step="1"
-                      value="0"
+                      value="1"
                     />
                   </div>
 
                   <div class="field-row">
-                    <label for="right-max">Maximum</label>
+                    <label for="lower-max">Maximum</label>
                     <input
                       required
                       type="number"
-                      id="right-max"
-                      name="right-max"
+                      id="lower-max"
+                      name="lower-max"
                       min="0"
                       max="1000"
                       step="1"
-                      value="100"
+                      value="10"
                     />
                   </div>
                 </fieldset>
@@ -174,12 +183,12 @@
 
                 <div class="field-row">
                   <input type="checkbox" id="ints-only" name="ints-only" />
-                  <label for="ints-only">Integer (whole number) answers only</label>
+                  <label for="ints-only">Integer (whole number) answers (Division only)</label>
                 </div>
 
                 <div class="field-row">
                   <input type="checkbox" id="long-div-notation" name="long-div-notation" />
-                  <label for="long-div-notation">Long division notation</label>
+                  <label for="long-div-notation">Long division notation (Division only)</label>
                 </div>
 
                 <div class="field-row">
@@ -219,11 +228,11 @@
               </div>
               <div class="field-row">
                 <input type="checkbox" name="with-header" id="with-header" />
-                <label for="with-header">Header</label>
+                <label for="with-header">Show header</label>
               </div>
               <div class="field-row">
                 <input type="checkbox" name="with-answers" id="with-answers" />
-                <label for="with-answers">Answers</label>
+                <label for="with-answers">With answers</label>
               </div>
             </div>
 

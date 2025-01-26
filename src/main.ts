@@ -31,6 +31,7 @@ const seedInput = document.getElementById("seed") as HTMLInputElement;
 const fontSelect = document.getElementById("font-select") as HTMLSelectElement;
 const withHeaderCheckbox = document.getElementById("with-header") as HTMLInputElement;
 const withAnswersCheckbox = document.getElementById("with-answers") as HTMLInputElement;
+const longDivNotationCheckbox = document.getElementById("long-div-notation") as HTMLInputElement;
 const bgSwitcher = document.querySelector("#bg-switcher select") as HTMLSelectElement;
 
 // --- Buttons
@@ -130,10 +131,10 @@ inputForm.addEventListener("submit", (e) => {
   const options: GeneratorOptions = {
     seed: inputData.get("seed") as unknown as number, // TODO: generate a new seed if not present
     operator: inputData.get("operator") as string,
-    leftMin: inputData.get("left-min") as unknown as number,
-    leftMax: inputData.get("left-max") as unknown as number,
-    rightMin: inputData.get("right-min") as unknown as number,
-    rightMax: inputData.get("right-max") as unknown as number,
+    upperMin: inputData.get("upper-min") as unknown as number,
+    upperMax: inputData.get("upper-max") as unknown as number,
+    lowerMin: inputData.get("lower-min") as unknown as number,
+    lowerMax: inputData.get("lower-max") as unknown as number,
     numProblems: inputData.get("num-problems") as unknown as number,
     descOrder: inputData.get("desc-order") as unknown as boolean,
     noNegatives: inputData.get("no-negatives") as unknown as boolean,
@@ -144,9 +145,14 @@ inputForm.addEventListener("submit", (e) => {
 
   showPageHeader();
 
+  // quick validation check
+  if (!validateForm(options)) {
+    throw new Error("Form is invalid");
+  }
+
   generatedProblems.length = 0;
   generatedProblems = generateMathProblems(options);
-  writeProblems(generatedProblems, withAnswersCheckbox.checked);
+  writeProblems(generatedProblems, withAnswersCheckbox.checked, options.longDivNotation);
   setPrintPreviewFont();
   pdfButton.removeAttribute("disabled");
   page!.classList.remove("d-none");
@@ -193,10 +199,10 @@ function setFormValues(options: GeneratorOptions) {
     // simple map of GeneratorOption key to form name
     const inputName =
       {
-        leftMin: "left-min",
-        leftMax: "left-max",
-        rightMin: "right-min",
-        rightMax: "right-max",
+        leftMin: "upper-min",
+        leftMax: "upper-max",
+        rightMin: "lower-min",
+        rightMax: "lower-max",
         numProblems: "num-problems",
         descOrder: "desc-order",
         noNegatives: "no-negatives",
@@ -266,6 +272,33 @@ function updatePagesNote() {
   }
 }
 
+function validateForm(options: GeneratorOptions): boolean {
+  let isFormValid = true;
+
+  // minimum operands have to be less than maximum
+  if (parseInt(options.upperMin.toString()) > parseInt(options.upperMax.toString())) {
+    console.error("Minimum upper operand values must be greater than maximum upper operand values");
+    isFormValid = false;
+  }
+  if (parseInt(options.lowerMin.toString()) > parseInt(options.lowerMax.toString())) {
+    console.error("Minimum lower operand values must be less than maximum lower operand values");
+    isFormValid = false;
+  }
+
+  // for division problems
+  if (options.operator === "/") {
+    // integer answers are only possible if upper/dividend is greater than lower/divisor
+    if (options.intsOnly) {
+      if (parseInt(options.upperMax.toString()) < parseInt(options.lowerMin.toString())) {
+        console.error("Upper operand must be greater than lower operand for integer answers");
+        isFormValid = false;
+      }
+    }
+  }
+
+  return isFormValid;
+}
+
 function generateRandInt(min: number, max: number) {
   // integers only for now
   const minCeiled = Math.ceil(min);
@@ -297,10 +330,10 @@ function getAnswer(left: number, right: number, operator: string) {
 }
 
 function getOperands(options: GeneratorOptions, rng: SeededRNG) {
-  const leftOperand = rng.nextInt(options.leftMin, options.leftMax);
-  const rightOperand = rng.nextInt(options.rightMin, options.rightMax);
+  const upperOperand = rng.nextInt(options.upperMin, options.upperMax);
+  const lowerOperand = rng.nextInt(options.lowerMin, options.lowerMax);
 
-  let operands = [leftOperand, rightOperand];
+  let operands = [upperOperand, lowerOperand];
 
   // biggest number first for subtracting
   if (options.noNegatives || options.descOrder) {
@@ -309,7 +342,7 @@ function getOperands(options: GeneratorOptions, rng: SeededRNG) {
 
   // avoid divide by zero
   if (options.operator === "/" && operands[1] === 0) {
-    operands[1] = rng.nextInt(1, options.rightMax);
+    operands[1] = rng.nextInt(1, options.lowerMax);
   }
 
   return operands;
@@ -354,14 +387,25 @@ function writeProblems(problems: Problem[], withAnswer: boolean = false, longDiv
       .map((problem) => {
         const probStr = writeSingleProblem(problem, false, longDivNotation); // don't get the answer here, it'll be added separately
 
-        return `
-        <div class="grid-item">
+        if (problem.operator === "/" && longDivNotation !== null) {
+          return `
+          <div class="grid-item">
           <div class="pre-wrapper">
-            <pre class="problem">${probStr}</pre>
-            <pre class="answer ${withAnswer ? "" : "hidden"}">${problem.answer}</pre>
+          <pre class="answer ${withAnswer ? "" : "hidden"}">${problem.answer}</pre>
+          <pre class="problem">${probStr}</pre>
           </div>
-        </div>
-      `;
+          </div>
+          `;
+        } else {
+          return `
+          <div class="grid-item">
+          <div class="pre-wrapper">
+          <pre class="problem">${probStr}</pre>
+          <pre class="answer ${withAnswer ? "" : "hidden"}">${problem.answer}</pre>
+          </div>
+          </div>
+          `;
+        }
       })
       .join("");
 
@@ -381,6 +425,10 @@ function chunkArray<T>(array: T[], size: number): T[][] {
 }
 
 function writeSingleProblem(problem: Problem, withAnswer: boolean = false, longDivNotation: boolean = false) {
+  if (problem.operator === "/" && longDivNotation) {
+    return writeLongDivision(problem, withAnswer);
+  }
+
   // write the individual lines of the problem, with padding as needed
   const operatorChar =
     {
@@ -406,11 +454,19 @@ function writeSingleProblem(problem: Problem, withAnswer: boolean = false, longD
 
 function writeLongDivision(problem: Problem, withAnswer: boolean = false) {
   // EXAMPLE
-  //
-  //     ┌─────
-  //   8 │ 256
-  //
-  //
+
+  //             quotient
+  //           __________
+  //   divisor ) dividend
+
+  let line1 = ` ${"_".repeat(problem.left.toString().length + 2)}`;
+  let line2 = `${problem.right} ) ${problem.left}`;
+
+  if (!withAnswer) {
+    return `${line1}\n${line2}`;
+  } else {
+    return `${problem.answer}\n${line1}\n${line2}`;
+  }
 }
 
 async function generatePDF(problems: Problem[]) {
@@ -446,7 +502,7 @@ async function generatePDF(problems: Problem[]) {
 
   // prepare table data
   problems.forEach((problem, index) => {
-    const formattedProblem = writeSingleProblem(problem, withAnswersCheckbox.checked);
+    const formattedProblem = writeSingleProblem(problem, withAnswersCheckbox.checked, longDivNotationCheckbox.checked);
     data.push(formattedProblem);
   });
 
@@ -516,14 +572,14 @@ function getOptionsFromURL(): GeneratorOptions {
   return {
     seed: parseInt(params.get("seed") || generateRandomSeed().toString(), 10),
     operator: params.get("operator") || "+",
-    leftMin: parseInt(params.get("left-min") || "0"),
-    leftMax: parseInt(params.get("lef-max") || "100"),
-    rightMin: parseInt(params.get("right-min") || "0"),
-    rightMax: parseInt(params.get("right-max") || "100"),
+    upperMin: parseInt(params.get("upper-min") || "0"),
+    upperMax: parseInt(params.get("lef-max") || "100"),
+    lowerMin: parseInt(params.get("lower-min") || "0"),
+    lowerMax: parseInt(params.get("lower-max") || "100"),
     numProblems: parseInt(params.get("num-problems") || problemsPerPage.toString(), 10),
     descOrder: params.get("desc-order") ? params.get("desc-order") === "on" : false,
     noNegatives: params.get("no-negatives") ? params.get("no-negatives") === "on" : false,
-    intsOnly: params.get("ints-only") ? params.get("ints-only") === "on" : false,
+    intsOnly: params.get("ints-only") ? params.get("ints-only") === "on" : true,
     longDivNotation: params.get("long-div-notation") ? params.get("long-div-notation") === "on" : false,
     fontSelect: params.get("font-select") || "Courier"
   };
