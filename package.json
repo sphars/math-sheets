@@ -1,6 +1,6 @@
 {
   "name": "math-sheets",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "description": "Generate PDF worksheets of simple math problems in the browser.",
   "scripts": {
@@ -25,17 +25,17 @@
   "homepage": "https://github.com/sphars/math-sheets#readme",
   "dependencies": {
     "html2canvas": "^1.4.1",
-    "jspdf": "^2.5.1",
-    "jspdf-autotable": "github:simonbengtsson/jsPDF-AutoTable#v4"
+    "jspdf": "^3.0.1",
+    "jspdf-autotable": "^5.0.2"
   },
   "devDependencies": {
-    "@fontsource-variable/roboto-flex": "^5.0.15",
-    "@types/node": "^20.14.10",
+    "@fontsource-variable/roboto-flex": "^5.2.5",
+    "@types/node": "^22.13.14",
     "98.css": "^0.1.20",
-    "husky": "^9.0.11",
-    "prettier": "3.3.3",
-    "semver": "^7.6.2",
-    "typescript": "^5.5.3",
-    "vite": "^5.3.3"
+    "husky": "^9.1.7",
+    "prettier": "3.5.3",
+    "semver": "^7.7.1",
+    "typescript": "^5.8.2",
+    "vite": "^6.2.3"
   }
 }

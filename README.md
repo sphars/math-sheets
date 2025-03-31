@@ -49,7 +49,7 @@ See [ISSUES](https://github.com/sphars/math-sheets/issues) for details about upc
 
 ## Development
 
-This site is built with Typescript and Vite. Only requirement is Node v20+. To run locally, clone the repo, then
+This site is built with Typescript and Vite. Only requirement is Node v22+. To run locally, clone the repo, then
 
 ```
 cd math-sheets
