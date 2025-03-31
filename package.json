@@ -25,8 +25,8 @@
   "homepage": "https://github.com/sphars/math-sheets#readme",
   "dependencies": {
     "html2canvas": "^1.4.1",
-    "jspdf": "^2.5.1",
-    "jspdf-autotable": "github:simonbengtsson/jsPDF-AutoTable#v4"
+    "jspdf": "^3.0.1",
+    "jspdf-autotable": "^5.0.2"
   },
   "devDependencies": {
     "@fontsource-variable/roboto-flex": "^5.2.5",
