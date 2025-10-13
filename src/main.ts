@@ -224,7 +224,9 @@ function setFormValues(options: GeneratorOptions) {
 
     // mark checkboxes checked for selected operators
     if (key === "operators") {
-      const operatorCheckboxes = inputForm.elements.namedItem("operator") as RadioNodeList;
+      const operatorCheckboxes = Array.from(
+        inputForm.elements.namedItem("operator") as RadioNodeList
+      ) as HTMLInputElement[];
       value.forEach((operator: string) => {
         operatorCheckboxes.forEach((opCB) => {
           if (opCB.value === operator) opCB.checked = true;
