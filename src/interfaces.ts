@@ -17,7 +17,7 @@ export interface Problem {
 
 export interface GeneratorOptions {
   seed: number;
-  operator: string;
+  operators: string[];
   upperMin: number;
   upperMax: number;
   lowerMin: number;

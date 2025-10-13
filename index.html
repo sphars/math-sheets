@@ -62,7 +62,7 @@
       <div class="main-wrapper">
         <div class="window">
           <div class="title-bar">
-            <div class="title-bar-text">Generator Options</div>
+            <div class="title-bar-text">Generate Problems</div>
             <div class="title-bar-controls">
               <button aria-label="Minimize"></button>
               <button aria-label="Maximize"></button>
@@ -78,24 +78,20 @@
               <fieldset>
                 <legend>Operator</legend>
                 <div class="field-row">
-                  <input type="radio" name="operator" id="operator-add" value="+" checked />
+                  <input type="checkbox" name="operator" id="operator-add" value="+" />
                   <label for="operator-add">Addition (&plus;)</label>
                 </div>
                 <div class="field-row">
-                  <input type="radio" name="operator" id="operator-subtract" value="-" />
+                  <input type="checkbox" name="operator" id="operator-subtract" value="-" />
                   <label for="operator-subtract">Subtraction (&minus;)</label>
                 </div>
                 <div class="field-row">
-                  <input type="radio" name="operator" id="operator-multiply" value="*" />
+                  <input type="checkbox" name="operator" id="operator-multiply" value="*" />
                   <label for="operator-multiply">Multiplication (&times;)</label>
                 </div>
                 <div class="field-row">
-                  <input type="radio" name="operator" id="operator-divide" value="/" />
+                  <input type="checkbox" name="operator" id="operator-divide" value="/" />
                   <label for="operator-divide">Division (&divide;)</label>
-                </div>
-                <div class="field-row">
-                  <input type="radio" name="operator" id="operator-mix" value="mix" />
-                  <label for="operator-mix">Mix</label>
                 </div>
               </fieldset>
 
@@ -165,7 +161,7 @@
               </fieldset>
 
               <fieldset>
-                <legend>Options</legend>
+                <legend>Generator Options</legend>
                 <div class="field-row">
                   <label for="num-problems">Number of problems</label>
                   <input required type="number" id="num-problems" name="num-problems" min="1" max="1000" step="1" />
@@ -183,24 +179,41 @@
 
                 <div class="field-row">
                   <input type="checkbox" id="ints-only" name="ints-only" />
-                  <label for="ints-only">Integer (whole number) answers (Division only)</label>
+                  <label for="ints-only">Integer (whole number) answers</label>
                 </div>
 
                 <div class="field-row">
                   <input type="checkbox" id="long-div-notation" name="long-div-notation" />
-                  <label for="long-div-notation">Long division notation (Division only)</label>
+                  <label for="long-div-notation">Long division notation</label>
                 </div>
 
                 <div class="field-row">
-                  <label for="seed">Seed</label>
+                  <label for="seed">RNG Seed</label>
                   <input required type="number" id="seed" name="seed" min="0" max="100000000" step="1" value="" />
                   <button type="button" id="reseed">New Seed</button>
                 </div>
               </fieldset>
+
+              <fieldset>
+                <legend>Print Options</legend>
+                <div class="field-row">
+                  <label for="font-select">Font</label>
+                  <select name="font-select" id="font-select"></select>
+                </div>
+                <div class="field-row">
+                  <input type="checkbox" name="with-header" id="with-header" />
+                  <label for="with-header">Add Header</label>
+                </div>
+                <div class="field-row">
+                  <input type="checkbox" name="with-answers" id="with-answers" />
+                  <label for="with-answers">Include Answers</label>
+                </div>
+              </fieldset>
             </form>
             <section class="field-row window-actions">
-              <button type="submit" id="form-submit" form="input-form">Generate</button>
+              <button id="save-config">Save Config</button>
               <button type="reset" form="input-form">Reset</button>
+              <button type="submit" id="form-submit" form="input-form">Generate</button>
             </section>
           </div>
         </div>
@@ -221,20 +234,6 @@
               Due to differences in HTML vs PDF rendering, the PDF will not look quite the same as what you see below.
               But it'll be pretty close.
             </p>
-            <div class="fields">
-              <div class="field-row">
-                <label for="font-select">Font</label>
-                <select name="font-select" id="font-select"></select>
-              </div>
-              <div class="field-row">
-                <input type="checkbox" name="with-header" id="with-header" />
-                <label for="with-header">Show header</label>
-              </div>
-              <div class="field-row">
-                <input type="checkbox" name="with-answers" id="with-answers" />
-                <label for="with-answers">With answers</label>
-              </div>
-            </div>
 
             <!-- TODO: rename to print-preview -->
             <div class="text-area" id="page-wrapper">
@@ -249,7 +248,6 @@
             </div>
 
             <section class="field-row window-actions">
-              <button id="save-config">Save Config</button>
               <button id="pdf-button" disabled>Print</button>
             </section>
           </div>

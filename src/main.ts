@@ -130,7 +130,7 @@ inputForm.addEventListener("submit", (e) => {
 
   const options: GeneratorOptions = {
     seed: inputData.get("seed") as unknown as number, // TODO: generate a new seed if not present
-    operator: inputData.get("operator") as string,
+    operators: inputData.getAll("operator") as string[],
     upperMin: inputData.get("upper-min") as unknown as number,
     upperMax: inputData.get("upper-max") as unknown as number,
     lowerMin: inputData.get("lower-min") as unknown as number,
@@ -221,6 +221,16 @@ function setFormValues(options: GeneratorOptions) {
           break;
       }
     }
+
+    // mark checkboxes checked for selected operators
+    if (key === "operators") {
+      const operatorCheckboxes = inputForm.elements.namedItem("operator") as RadioNodeList;
+      value.forEach((operator: string) => {
+        operatorCheckboxes.forEach((opCB) => {
+          if (opCB.value === operator) opCB.checked = true;
+        });
+      });
+    }
   }
 }
 
@@ -275,6 +285,11 @@ function updatePagesNote() {
 function validateForm(options: GeneratorOptions): boolean {
   let isFormValid = true;
 
+  if (!options.operators || options.operators.length < 1) {
+    console.error("At least one operator must be selected");
+    isFormValid = false;
+  }
+
   // minimum operands have to be less than maximum
   if (parseInt(options.upperMin.toString()) > parseInt(options.upperMax.toString())) {
     console.error("Minimum upper operand values must be greater than maximum upper operand values");
@@ -286,7 +301,7 @@ function validateForm(options: GeneratorOptions): boolean {
   }
 
   // for division problems
-  if (options.operator === "/") {
+  if (options.operators.includes("/")) {
     // integer answers are only possible if upper/dividend is greater than lower/divisor
     if (options.intsOnly) {
       if (parseInt(options.upperMax.toString()) < parseInt(options.lowerMin.toString())) {
@@ -329,7 +344,7 @@ function getAnswer(left: number, right: number, operator: string) {
   return answer;
 }
 
-function getOperands(options: GeneratorOptions, rng: SeededRNG) {
+function getOperands(options: GeneratorOptions, rng: SeededRNG, currOperator: string) {
   const upperOperand = rng.nextInt(options.upperMin, options.upperMax);
   const lowerOperand = rng.nextInt(options.lowerMin, options.lowerMax);
 
@@ -341,7 +356,7 @@ function getOperands(options: GeneratorOptions, rng: SeededRNG) {
   }
 
   // avoid divide by zero
-  if (options.operator === "/" && operands[1] === 0) {
+  if (currOperator === "/" && operands[1] === 0) {
     operands[1] = rng.nextInt(1, options.lowerMax);
   }
 
@@ -352,26 +367,26 @@ function generateMathProblems(options: GeneratorOptions): Problem[] {
   const rng = new SeededRNG(options.seed);
 
   for (let i = 0; i < options.numProblems; i++) {
-    // copy the form options
-    const optionsCopy = JSON.parse(JSON.stringify(options)) as GeneratorOptions;
+    // if operators has more than one selection, randomize which one to use
+    const currOperator =
+      options.operators.length > 1
+        ? options.operators[rng.nextInt(0, options.operators.length - 1)]
+        : options.operators[0];
 
-    // if operator = mix, need to randomize which operator to use
-    optionsCopy.operator = options.operator === "mix" ? operators[rng.nextInt(0, 3)] : options.operator;
-
-    let operands = getOperands(optionsCopy, rng);
-    let answer = getAnswer(operands[0], operands[1], optionsCopy.operator);
+    let operands = getOperands(options, rng, currOperator);
+    let answer = getAnswer(operands[0], operands[1], currOperator);
 
     if (options.intsOnly) {
       do {
-        operands = getOperands(options, rng);
-        answer = getAnswer(operands[0], operands[1], optionsCopy.operator);
+        operands = getOperands(options, rng, currOperator);
+        answer = getAnswer(operands[0], operands[1], currOperator);
       } while (!Number.isInteger(answer));
     }
 
     generatedProblems.push({
       left: operands[0],
       right: operands[1],
-      operator: optionsCopy.operator,
+      operator: currOperator,
       answer: answer
     });
   }
@@ -571,7 +586,7 @@ function getOptionsFromURL(): GeneratorOptions {
   // return a GeneratorOptions object with either the values from the params or default values
   return {
     seed: parseInt(params.get("seed") || generateRandomSeed().toString(), 10),
-    operator: params.get("operator") || "+",
+    operators: params.getAll("operator").length > 0 ? params.getAll("operator") : ["+"],
     upperMin: parseInt(params.get("upper-min") || "0"),
     upperMax: parseInt(params.get("lef-max") || "100"),
     lowerMin: parseInt(params.get("lower-min") || "0"),
